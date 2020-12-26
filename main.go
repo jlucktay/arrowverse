@@ -11,7 +11,7 @@ import (
 func main() {
 	episodeLists, errPE := scrape.EpisodeLists()
 	if errPE != nil {
-		fmt.Fprintf(os.Stderr, "could not get episode list URLs: %v", errPE)
+		fmt.Fprintf(os.Stderr, "could not get episode list URLs: %v\n", errPE)
 	}
 
 	shows := []models.Show{}
@@ -19,7 +19,7 @@ func main() {
 	for s, el := range episodeLists {
 		show, errPE := scrape.Episodes(s, el)
 		if errPE != nil {
-			fmt.Fprintf(os.Stderr, "could not get episode details for '%s': %v", s, errPE)
+			fmt.Fprintf(os.Stderr, "could not get episode details for '%s': %v\n", s, errPE)
 		}
 
 		shows = append(shows, *show)

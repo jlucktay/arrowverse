@@ -19,7 +19,7 @@ func EpisodeLists() (map[string]string, error) {
 
 	c := colly.NewCollector(
 		colly.AllowedDomains(allowedDomain),
-		colly.MaxDepth(1),
+		colly.MaxDepth(0),
 	)
 
 	c.OnHTML("body", func(body *colly.HTMLElement) {
