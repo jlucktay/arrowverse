@@ -54,10 +54,8 @@ func Episodes(show, episodeListURL string) (*models.Show, error) {
 				// Handle the 'DC's Legends of Tomorrow' season 5 special episode
 				if epSeason == `—` && s.Seasons[i].Number == 5 && s.Name == "DC's Legends of Tomorrow" {
 					ep.EpisodeSeason = 0
-				} else {
-					if ep.EpisodeSeason, err = strconv.Atoi(strings.TrimSpace(epSeason)); err != nil {
-						return
-					}
+				} else if ep.EpisodeSeason, err = strconv.Atoi(strings.TrimSpace(epSeason)); err != nil {
+					return
 				}
 
 				epName := strings.Trim(strings.TrimSpace(tbody.ChildText(itSel.Next())), `"`)
@@ -81,10 +79,8 @@ func Episodes(show, episodeListURL string) (*models.Show, error) {
 					theFuture := 5252 - time.Now().Year() //nolint:gomnd // https://dc.fandom.com/wiki/52#52
 
 					ep.Airdate = time.Now().AddDate(theFuture, 0, 0).Round(time.Hour * 24) //nolint:gomnd // 24h = 1d
-				} else {
-					if ep.Airdate, err = time.Parse(models.AirdateLayout, epAirdate); err != nil {
-						return
-					}
+				} else if ep.Airdate, err = time.Parse(models.AirdateLayout, epAirdate); err != nil {
+					return
 				}
 
 				// Add this episode to the current season, indexed by 'i' from body.ForEach
