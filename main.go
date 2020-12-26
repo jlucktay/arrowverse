@@ -12,7 +12,7 @@ import (
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gocolly/colly/v2"
 
-	"go.jlucktay.dev/golang-workbench/arrowverse/pkg/models"
+	"go.jlucktay.dev/arrowverse/pkg/models"
 )
 
 const (

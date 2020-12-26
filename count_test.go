@@ -6,7 +6,7 @@ import (
 
 	"github.com/matryer/is"
 
-	arrowverse "go.jlucktay.dev/golang-workbench/arrowverse"
+	arrowverse "go.jlucktay.dev/arrowverse"
 )
 
 func TestEpisodeNumbers(t *testing.T) {

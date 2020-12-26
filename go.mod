@@ -1,4 +1,4 @@
-module go.jlucktay.dev/golang-workbench/arrowverse
+module go.jlucktay.dev/arrowverse
 
 go 1.15
 
