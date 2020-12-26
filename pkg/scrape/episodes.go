@@ -43,8 +43,7 @@ func Episodes(show, episodeListURL string) (*models.Show, error) {
 				checkCiteSuffix := regexp.MustCompile(`"?\[[0-9]+\]$`)
 
 				if tbody.DOM.ChildrenFiltered("td").Length() >= 4 { //nolint:gomnd // Deal with wider tables
-					ep.EpisodeOverall, err = strconv.Atoi(strings.TrimSpace(tbody.ChildText(itSel.Next())))
-					if err != nil {
+					if ep.EpisodeOverall, err = strconv.Atoi(strings.TrimSpace(tbody.ChildText(itSel.Next()))); err != nil {
 						return
 					}
 				}
@@ -56,8 +55,7 @@ func Episodes(show, episodeListURL string) (*models.Show, error) {
 				if epSeason == `—` && s.Seasons[i].Number == 5 && s.Name == "DC's Legends of Tomorrow" {
 					ep.EpisodeSeason = 0
 				} else {
-					ep.EpisodeSeason, err = strconv.Atoi(strings.TrimSpace(epSeason))
-					if err != nil {
+					if ep.EpisodeSeason, err = strconv.Atoi(strings.TrimSpace(epSeason)); err != nil {
 						return
 					}
 				}
@@ -70,8 +68,8 @@ func Episodes(show, episodeListURL string) (*models.Show, error) {
 					return
 				}
 
-				ep.Link, err = url.Parse(tbody.Request.AbsoluteURL(tbody.ChildAttr(itSel.String()+" a", "href")))
-				if err != nil {
+				raw := tbody.Request.AbsoluteURL(tbody.ChildAttr(itSel.String()+" a", "href"))
+				if ep.Link, err = url.Parse(raw); err != nil {
 					return
 				}
 
@@ -84,8 +82,7 @@ func Episodes(show, episodeListURL string) (*models.Show, error) {
 
 					ep.Airdate = time.Now().AddDate(theFuture, 0, 0).Round(time.Hour * 24) //nolint:gomnd // 24h = 1d
 				} else {
-					ep.Airdate, err = time.Parse(models.AirdateLayout, epAirdate)
-					if err != nil {
+					if ep.Airdate, err = time.Parse(models.AirdateLayout, epAirdate); err != nil {
 						return
 					}
 				}
