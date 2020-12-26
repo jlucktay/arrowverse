@@ -19,7 +19,7 @@ RUN go mod download
 COPY . .
 
 # Do the actual build step itself
-RUN GOARCH=amd64 GOOS=linux go build -a -installsuffix cgo -mod=mod -o /bin/arrowverse
+RUN GOARCH=amd64 GOOS=linux go build -a -installsuffix cgo -o /bin/arrowverse
 
 FROM scratch
 

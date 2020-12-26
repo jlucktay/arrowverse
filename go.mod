@@ -10,6 +10,9 @@ require (
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/matryer/is v1.4.0
+	github.com/mitchellh/go-homedir v1.1.0
+	github.com/spf13/cobra v1.1.1
+	github.com/spf13/viper v1.7.1
 	golang.org/x/net v0.0.0-20201216054612-986b41b23924 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

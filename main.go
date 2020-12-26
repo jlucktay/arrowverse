@@ -1,31 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"os"
-
-	"go.jlucktay.dev/arrowverse/pkg/models"
-	"go.jlucktay.dev/arrowverse/pkg/scrape"
-)
+import "go.jlucktay.dev/arrowverse/cmd"
 
 func main() {
-	episodeLists, errPE := scrape.EpisodeLists()
-	if errPE != nil {
-		fmt.Fprintf(os.Stderr, "could not get episode list URLs: %v\n", errPE)
-	}
-
-	shows := []models.Show{}
-
-	for s, el := range episodeLists {
-		show, errPE := scrape.Episodes(s, el)
-		if errPE != nil {
-			fmt.Fprintf(os.Stderr, "could not get episode details for '%s': %v\n", s, errPE)
-		}
-
-		shows = append(shows, *show)
-	}
-
-	for i := range shows {
-		fmt.Println(shows[i])
-	}
+	cmd.Execute()
 }
