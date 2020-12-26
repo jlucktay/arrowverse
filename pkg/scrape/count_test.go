@@ -1,4 +1,4 @@
-package main_test
+package scrape_test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/matryer/is"
 
-	arrowverse "go.jlucktay.dev/arrowverse"
+	"go.jlucktay.dev/arrowverse/pkg/scrape"
 )
 
 func TestEpisodeNumbers(t *testing.T) {
@@ -29,19 +29,19 @@ func TestEpisodeNumbers(t *testing.T) {
 		"Vixen":                     {1: 6, 2: 6},
 	}
 
-	episodeListURLs, errGELU := arrowverse.GetEpisodeListURLs()
-	is.NoErr(errGELU)
-	is.Equal(len(episodeListURLs), len(showSeasonEpisodes))
+	episodeLists, errEL := scrape.EpisodeLists()
+	is.NoErr(errEL)
+	is.Equal(len(episodeLists), len(showSeasonEpisodes))
 
-	for s, elu := range episodeListURLs {
+	for s, el := range episodeLists {
 		// Pin! ref: https://github.com/golang/go/wiki/CommonMistakes#using-reference-to-loop-iterator-variable
-		s, elu := s, elu
+		s, el := s, el
 
 		t.Run(s, func(t *testing.T) {
 			// Don't use .Parallel() without pinning
 			t.Parallel()
 
-			show, errGE := arrowverse.GetEpisodes(s, elu)
+			show, errGE := scrape.Episodes(s, el)
 			is.NoErr(errGE)
 
 			seasonNumbers, haveShowNumbers := showSeasonEpisodes[s]
