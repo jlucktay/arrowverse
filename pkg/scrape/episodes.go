@@ -29,10 +29,10 @@ func Episodes(show, episodeListURL string) (*models.Show, error) {
 	c.OnHTML("body", func(body *colly.HTMLElement) {
 		body.ForEach("table.wikitable", func(i int, table *colly.HTMLElement) {
 			// Add a new season for this wikitable
-			s.Seasons = append(s.Seasons, models.Season{Number: i + 1})
+			s.Seasons = append(s.Seasons, models.Season{Show: s, Number: i + 1})
 
 			table.ForEach("tbody tr", func(_ int, tbody *colly.HTMLElement) {
-				ep, errPE := processTableBody(tbody, s.Name, s.Seasons[i].Number)
+				ep, errPE := processTableBody(tbody, s, &s.Seasons[i])
 				if errPE != nil {
 					return
 				}
@@ -57,7 +57,7 @@ func Episodes(show, episodeListURL string) (*models.Show, error) {
 	return s, nil
 }
 
-func processTableBody(tbody *colly.HTMLElement, showName string, seasonNumber int) (*models.Episode, error) {
+func processTableBody(tbody *colly.HTMLElement, show *models.Show, season *models.Season) (*models.Episode, error) {
 	if tbody.DOM.ChildrenFiltered("th").Length() > 0 { // Skip <th> row
 		return nil, ErrNotEpisodeRow
 	}
@@ -80,7 +80,7 @@ func processTableBody(tbody *colly.HTMLElement, showName string, seasonNumber in
 	epSeason = checkCiteSuffix.ReplaceAllString(epSeason, "")
 
 	// Handle the 'DC's Legends of Tomorrow' season 5 special episode
-	if epSeason == `—` && seasonNumber == 5 && showName == "DC's Legends of Tomorrow" {
+	if epSeason == `—` && season.Number == 5 && show.Name == "DC's Legends of Tomorrow" {
 		ep.EpisodeSeason = 0
 	} else if ep.EpisodeSeason, err = strconv.Atoi(strings.TrimSpace(epSeason)); err != nil {
 		return nil, fmt.Errorf("%q: %w", epSeason, ErrCouldNotParse)
@@ -110,6 +110,8 @@ func processTableBody(tbody *colly.HTMLElement, showName string, seasonNumber in
 	} else if ep.Airdate, err = time.Parse(models.AirdateLayout, epAirdate); err != nil {
 		return nil, fmt.Errorf("%q: %w", epAirdate, ErrCouldNotParse)
 	}
+
+	ep.Season = season
 
 	return ep, nil
 }
