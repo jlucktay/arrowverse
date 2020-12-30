@@ -11,7 +11,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"go.jlucktay.dev/arrowverse/pkg/models"
+	"go.jlucktay.dev/arrowverse/pkg/collection"
+	"go.jlucktay.dev/arrowverse/pkg/collection/inmemory"
 	"go.jlucktay.dev/arrowverse/pkg/scrape"
 )
 
@@ -54,7 +55,7 @@ episode watch order of all TV shows in DC's Arrowverse.`,
 			fmt.Fprintf(cmd.OutOrStderr(), "could not get episode lists: %v\n", errEL)
 		}
 
-		shows := []models.Show{}
+		var cs collection.Shows = &inmemory.Collection{}
 
 		for s, el := range episodeLists {
 			show, errEps := scrape.Episodes(s, el)
@@ -62,11 +63,18 @@ episode watch order of all TV shows in DC's Arrowverse.`,
 				fmt.Fprintf(cmd.OutOrStderr(), "could not get episode details for '%s': %v\n", s, errEps)
 			}
 
-			shows = append(shows, *show)
+			if errAdd := cs.Add(show); errAdd != nil {
+				fmt.Fprintf(cmd.OutOrStderr(), "could not add '%s' details to collection: %v\n", show.Name, errAdd)
+			}
 		}
 
-		for i := range shows {
-			fmt.Fprintln(cmd.OutOrStdout(), shows[i])
+		csio, errIO := cs.InOrder()
+		if errIO != nil {
+			fmt.Fprintf(cmd.OutOrStderr(), "could not get episode details: %v\n", errIO)
+		}
+
+		for i := range csio {
+			fmt.Fprintln(cmd.OutOrStdout(), csio[i])
 		}
 	},
 }
