@@ -7,6 +7,9 @@ import (
 
 // Season describes a season of an Arrowverse show.
 type Season struct {
+	// Show points back to the show containing this season.
+	Show *Show
+
 	// Number of the season for the show.
 	Number int
 

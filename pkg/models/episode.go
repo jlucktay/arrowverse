@@ -11,6 +11,9 @@ type Episode struct {
 	// Name of the episode.
 	Name string
 
+	// Season points back to the season containing this episode.
+	Season *Season
+
 	// EpisodeSeason is the episode number within the current season.
 	EpisodeSeason int
 
@@ -25,5 +28,6 @@ type Episode struct {
 }
 
 func (e Episode) String() string {
-	return fmt.Sprintf("E%02d %-70s\t%-20s\t%s", e.EpisodeSeason, e.Name, e.Airdate.Format(AirdateLayout), e.Link)
+	return fmt.Sprintf("%30s S%02dE%02d %-70s\t%-20s\t%s",
+		e.Season.Show.Name, e.Season.Number, e.EpisodeSeason, e.Name, e.Airdate.Format(AirdateLayout), e.Link)
 }
