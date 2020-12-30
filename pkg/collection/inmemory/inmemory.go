@@ -2,14 +2,45 @@
 package inmemory
 
 import (
+	"sort"
+
 	"go.jlucktay.dev/arrowverse/pkg/models"
 )
 
-type Collection struct{}
+type Collection struct {
+	Shows []models.Show
+}
 
-// InOrder will return the given show(s) in airdate order.
-func (c *Collection) InOrder(shows []string) ([]*models.Episode, error) {
+// Add a show to the collection.
+func (c *Collection) Add(s *models.Show) error {
+	c.Shows = append(c.Shows, *s)
+
+	return nil
+}
+
+// AddSeason to the given show in the collection.
+func (c *Collection) AddSeason(show string, season *models.Season) error {
 	panic("not implemented") // TODO: Implement
+}
+
+// AddEpisode to the given show's season in the collection.
+func (c *Collection) AddEpisode(show string, season int, episode *models.Episode) error {
+	panic("not implemented") // TODO: Implement
+}
+
+// InOrder will return episodes from the given show(s) in airdate order.
+func (c *Collection) InOrder(shows ...string) ([]models.Episode, error) {
+	ret := []models.Episode{}
+
+	for _, show := range c.Shows {
+		for _, season := range show.Seasons {
+			ret = append(ret, season.Episodes...)
+		}
+	}
+
+	sort.Stable(ByAirdate(ret))
+
+	return ret, nil
 }
 
 // Count returns the number of shows in the collection.

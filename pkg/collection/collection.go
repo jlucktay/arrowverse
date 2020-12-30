@@ -6,8 +6,15 @@ import (
 )
 
 type Shows interface {
-	// InOrder will return the given show(s) in airdate order.
-	InOrder(shows []string) ([]*models.Episode, error)
+	// Add a show to the collection.
+	Add(*models.Show) error
+	// AddSeason to the given show in the collection.
+	AddSeason(show string, season *models.Season) error
+	// AddEpisode to the given show's season in the collection.
+	AddEpisode(show string, season int, episode *models.Episode) error
+
+	// InOrder will return episodes from the given show(s) in airdate order.
+	InOrder(shows ...string) ([]models.Episode, error)
 
 	// Count returns the number of shows in the collection.
 	Count() (int, error)
