@@ -26,6 +26,9 @@ lint: tmp/.linted.sentinel
 build: out/image-id
 .PHONY: test lint build
 
+bench: tmp/.benchmarks-ran.sentinel
+.PHONY: bench
+
 # Clean up the output directories; all the sentinel files go under `tmp`, so this will cause everything to get rebuilt.
 clean:
 > rm -rf ./tmp
@@ -61,3 +64,9 @@ out/image-id: Dockerfile tmp/.linted.sentinel
 > image_id="$(image_repository):$$(uuidgen)"
 > docker build --tag="$${image_id}" .
 > echo "$${image_id}" > out/image-id
+
+# Benchmarks - run enough iterations of each benchmark to take 10 seconds
+tmp/.benchmarks-ran.sentinel: tmp/.tests-passed.sentinel
+> mkdir -p $(@D)
+> go test ./... -bench=. -benchmem -benchtime=10s -run=DoNotRunTests
+> touch $@
