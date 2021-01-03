@@ -2,7 +2,7 @@
 
 ## Features
 
-- finish the Collection in-memory implementation
+- ~~finish the Collection in-memory implementation~~
 - put a (GraphQL? REST?) API in front of said Collection
 - populate Collection with a `sync.Once` scrape at startup
 - gin up a TypeScript/React web app FE
@@ -11,8 +11,8 @@
 
 ## Structure
 
-- refactor around [Cobra](https://github.com/spf13/cobra)
-- run config through [Viper](https://github.com/spf13/viper)
+- ~~refactor around [Cobra](https://github.com/spf13/cobra)~~
+- ~~run config through [Viper](https://github.com/spf13/viper)~~
 
 ## Miscellaneous
 
