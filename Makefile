@@ -38,7 +38,7 @@ clean:
 # Clean up any built Docker images.
 clean-docker:
 > docker images \
-  --filter=reference='$(image_repository)' \
+  --filter=reference=$(image_repository) \
   --no-trunc --quiet | sort -f | uniq | xargs -n 1 docker rmi --force
 > rm -f ./out/image-id
 .PHONY: clean-docker
