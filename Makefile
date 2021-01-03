@@ -62,7 +62,7 @@ tmp/.linted.sentinel: Dockerfile tmp/.tests-passed.sentinel
 out/image-id: Dockerfile tmp/.linted.sentinel
 > mkdir -p $(@D)
 > image_id="$(image_repository):$$(uuidgen)"
-> docker build --tag="$${image_id}" .
+> DOCKER_BUILDKIT=1 docker build --tag="$${image_id}" .
 > echo "$${image_id}" > out/image-id
 
 # Benchmarks - run enough iterations of each benchmark to take 10 seconds
