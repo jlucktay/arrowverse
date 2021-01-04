@@ -28,6 +28,6 @@ type Episode struct {
 }
 
 func (e Episode) String() string {
-	return fmt.Sprintf("%30s S%02dE%02d %-70s\t%-20s\t%s",
+	return fmt.Sprintf("%25s S%02dE%02d %-61.61s\t%-20s\t%s",
 		e.Season.Show.Name, e.Season.Number, e.EpisodeSeason, e.Name, e.Airdate.Format(AirdateLayout), e.Link)
 }

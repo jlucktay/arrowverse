@@ -74,7 +74,7 @@ episode watch order of all TV shows in DC's Arrowverse.`,
 		}
 
 		for i := range csio {
-			fmt.Fprintln(cmd.OutOrStdout(), csio[i])
+			fmt.Fprintf(cmd.OutOrStdout(), "[%03d] %s\n", i, csio[i])
 		}
 	},
 }
