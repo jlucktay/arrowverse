@@ -28,13 +28,28 @@ func (c *Collection) AddEpisode(show string, season int, episode *models.Episode
 	panic("not implemented") // TODO: Implement
 }
 
-// InOrder will return episodes from the given show(s) in airdate order.
+// InOrder will return episodes (limited to the given show(s) if any) in airdate order.
 func (c *Collection) InOrder(shows ...string) ([]models.Episode, error) {
 	ret := []models.Episode{}
 
-	for _, show := range c.Shows {
-		for _, season := range show.Seasons {
-			ret = append(ret, season.Episodes...)
+	for i := range c.Shows {
+		if len(shows) > 0 {
+			found := false
+
+			for j := range shows {
+				if shows[j] == c.Shows[i].Name {
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				continue
+			}
+		}
+
+		for k := range c.Shows[i].Seasons {
+			ret = append(ret, c.Shows[i].Seasons[k].Episodes...)
 		}
 	}
 
