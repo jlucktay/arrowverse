@@ -39,6 +39,7 @@ func (c *Collection) InOrder(shows ...string) ([]models.Episode, error) {
 			for j := range shows {
 				if shows[j] == c.Shows[i].Name {
 					found = true
+
 					break
 				}
 			}

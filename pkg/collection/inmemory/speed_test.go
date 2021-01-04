@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	// result is stored in a package level variable so that the compiler cannot eliminate the Benchmark itself
+	// result is stored in a package level variable so that the compiler cannot eliminate the Benchmark itself.
 	// cf. https://dave.cheney.net/2013/06/30/how-to-write-benchmarks-in-go
 	result int
 
@@ -29,6 +29,7 @@ func getEpisodes() (collection.Shows, error) {
 		episodeLists, errEL := scrape.EpisodeLists()
 		if errEL != nil {
 			err = errEL
+
 			return
 		}
 
@@ -36,11 +37,13 @@ func getEpisodes() (collection.Shows, error) {
 			show, errEps := scrape.Episodes(s, el)
 			if errEps != nil {
 				err = errEps
+
 				return
 			}
 
 			if errAdd := cs.Add(show); errAdd != nil {
 				err = errAdd
+
 				return
 			}
 		}
@@ -64,11 +67,13 @@ func benchmarkInOrder(_ int, b *testing.B) {
 	is.NoErr(errGE)
 
 	var r int
+
 	b.ResetTimer() // If a benchmark needs some expensive setup before running, the timer may be reset
 
 	for n := 0; n < b.N; n++ {
 		episodesInOrder, errIO := episodes.InOrder()
 		is.NoErr(errIO)
+
 		r = len(episodesInOrder)
 	}
 

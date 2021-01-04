@@ -49,12 +49,11 @@ func (a ByAirdate) Less(i, j int) bool {
 		// True if the multi-episode series has the same title, e.g. 'Crisis on Infinite Earths'
 		if iMatches[titleIndex] == jMatches[titleIndex] {
 			partNumberIndex := rePart.SubexpIndex(multiPartNumber.String())
+
 			return numbers.Replace(iMatches[partNumberIndex]) < numbers.Replace(jMatches[partNumberIndex])
 		}
-
-		// ...otherwise, fall through to remaining logic
 	}
 
-	// Otherwise ... TODO?
+	// ...otherwise, fall through to remaining logic ... TODO?
 	return a[i].EpisodeOverall < a[j].EpisodeOverall
 }
