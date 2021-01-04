@@ -108,7 +108,10 @@ func processTableBody(tbody *colly.HTMLElement, show *models.Show, season *model
 
 		ep.Airdate = time.Now().AddDate(theFuture, 0, 0).Round(time.Hour * 24) //nolint:gomnd // 24h = 1d
 	} else if ep.Airdate, err = time.Parse(models.AirdateLayout, epAirdate); err != nil {
-		return nil, fmt.Errorf("%q: %w", epAirdate, ErrCouldNotParse)
+		// First attempt to parse date/month/year from airdate, otherwise fall back to parsing just a year
+		if ep.Airdate, err = time.Parse("2006", epAirdate); err != nil {
+			return nil, fmt.Errorf("%q: %w", epAirdate, ErrCouldNotParse)
+		}
 	}
 
 	ep.Season = season
