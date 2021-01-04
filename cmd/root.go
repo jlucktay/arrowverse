@@ -68,7 +68,23 @@ episode watch order of all TV shows in DC's Arrowverse.`,
 			}
 		}
 
-		csio, errIO := cs.InOrder()
+		includedShows := []string{
+			"Arrow",
+			"Batwoman",
+			"Black Lightning",
+			"Constantine",
+			"DC's Legends of Tomorrow",
+			"Freedom Fighters: The Ray",
+			"Supergirl",
+			"The Flash (The CW)",
+			"Vixen",
+		}
+
+		// Excluded shows:
+		// "Birds of Prey"
+		// "The Flash (CBS)"
+
+		csio, errIO := cs.InOrder(includedShows...)
 		if errIO != nil {
 			fmt.Fprintf(cmd.OutOrStderr(), "could not get episode details: %v\n", errIO)
 		}
