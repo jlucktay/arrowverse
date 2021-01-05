@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -28,6 +29,29 @@ type Episode struct {
 }
 
 func (e Episode) String() string {
-	return fmt.Sprintf("%25s S%02dE%02d %-61.61s\t%-20s\t%s",
-		e.Season.Show.Name, e.Season.Number, e.EpisodeSeason, e.Name, e.Airdate.Format(AirdateLayout), e.Link)
+	var b strings.Builder
+
+	if e.Season != nil {
+		if e.Season.Show != nil {
+			fmt.Fprintf(&b, "%25s ", e.Season.Show.Name)
+		} else {
+			fmt.Fprintf(&b, "%25s ", "<unknown show>")
+		}
+
+		fmt.Fprintf(&b, "S%02d", e.Season.Number)
+	} else {
+		fmt.Fprint(&b, "S??")
+	}
+
+	fmt.Fprintf(&b, "E%02d %-61.61s", e.EpisodeSeason, e.Name)
+
+	if !e.Airdate.IsZero() {
+		fmt.Fprintf(&b, " %-20s", e.Airdate.Format(AirdateLayout))
+	}
+
+	if e.Link != nil {
+		fmt.Fprintf(&b, " %s", e.Link)
+	}
+
+	return b.String()
 }
