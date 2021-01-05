@@ -3,6 +3,7 @@ package inmemory
 
 import (
 	"sort"
+	"strings"
 
 	"go.jlucktay.dev/arrowverse/pkg/models"
 )
@@ -20,12 +21,49 @@ func (c *Collection) Add(s *models.Show) error {
 
 // AddSeason to the given show in the collection.
 func (c *Collection) AddSeason(show string, season *models.Season) error {
-	panic("not implemented") // TODO: Implement
+	for i := range c.Shows {
+		if strings.EqualFold(c.Shows[i].Name, show) {
+			season.Show = &c.Shows[i]
+			c.Shows[i].Seasons = append(c.Shows[i].Seasons, *season)
+
+			return nil
+		}
+	}
+
+	newShow := &models.Show{Name: show}
+	season.Show = newShow
+	newShow.Seasons = append(newShow.Seasons, *season)
+
+	return c.Add(newShow)
 }
 
 // AddEpisode to the given show's season in the collection.
 func (c *Collection) AddEpisode(show string, season int, episode *models.Episode) error {
-	panic("not implemented") // TODO: Implement
+	for i := range c.Shows {
+		if strings.EqualFold(c.Shows[i].Name, show) {
+			for j := range c.Shows[i].Seasons {
+				if c.Shows[i].Seasons[j].Number == season {
+					episode.Season = &c.Shows[i].Seasons[j]
+					c.Shows[i].Seasons[j].Episodes = append(c.Shows[i].Seasons[j].Episodes, *episode)
+
+					return nil
+				}
+			}
+
+			newSeason := models.Season{Show: &c.Shows[i], Number: season, Episodes: []models.Episode{*episode}}
+			newSeason.Episodes[0].Season = &newSeason
+			c.Shows[i].Seasons = append(c.Shows[i].Seasons, newSeason)
+
+			return nil
+		}
+	}
+
+	newShow := &models.Show{Name: show}
+	newSeason := models.Season{Show: newShow, Number: season, Episodes: []models.Episode{*episode}}
+	newSeason.Episodes[0].Season = &newSeason
+	newShow.Seasons = append(newShow.Seasons, newSeason)
+
+	return c.Add(newShow)
 }
 
 // InOrder will return episodes (limited to the given show(s) if any) in airdate order.
