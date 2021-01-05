@@ -16,7 +16,7 @@ import (
 	"go.jlucktay.dev/arrowverse/pkg/util"
 )
 
-// GetEpisodes will retrieve details for all of the given show's episodes from the wiki.
+// Episodes will retrieve details for all of the given show's episodes from the wiki.
 func Episodes(show, episodeListURL string) (*models.Show, error) {
 	c := colly.NewCollector(
 		colly.AllowedDomains(allowedDomain),
