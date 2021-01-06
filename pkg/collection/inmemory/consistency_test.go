@@ -10,7 +10,6 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gocolly/colly/v2"
-	"github.com/gocolly/colly/v2/debug"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
@@ -24,10 +23,6 @@ import (
 func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 	t.SkipNow()
 
-	// get episodes from arrow.fandom.com
-	// get episodes from arrowverse.info
-	// compare with go-cmp
-
 	const (
 		host    = "arrowverse.info"
 		fullURL = "https://" + host
@@ -38,12 +33,10 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 	c := colly.NewCollector(
 		colly.AllowedDomains(host),
 		colly.MaxDepth(0),
-		colly.Debugger(&debug.LogDebugger{}),
 	)
 
-	// Create somewhere to store the shows
-	var csArrowverseInfo collection.Shows = &inmemory.Collection{}
-
+	// Create somewhere to store the list from arrowverse.info, and keep track of per-show overall episode number
+	var arrowverseInfoEpisodes []models.Episode
 	episodeOverallCounters := map[models.ShowName]int{}
 
 	c.OnHTML("body", func(body *colly.HTMLElement) {
@@ -110,9 +103,11 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 				episodeOverallCounters[showName] += 1
 				ep.EpisodeOverall = episodeOverallCounters[showName]
 
-				if err = csArrowverseInfo.AddEpisode(showName, seasonNumber, &ep); err != nil {
-					t.Fatalf("could not add episode '%#v' to collection: %v", ep, err)
-				}
+				ep.Season = &models.Season{
+					Show:   &models.Show{Name: showName},
+					Number: seasonNumber}
+
+				arrowverseInfoEpisodes = append(arrowverseInfoEpisodes, ep)
 			})
 		})
 	})
@@ -140,19 +135,14 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 		models.Vixen,
 	}
 
-	arrowverseInfoEpisodes, err := csArrowverseInfo.InOrder(includedShows...)
-	if err != nil {
-		t.Fatalf("error getting episodes in order: %v", err)
-	}
-
-	episodeLists, errEL := scrape.EpisodeLists()
+	arrowFandomComEpisodeLists, errEL := scrape.EpisodeLists()
 	if errEL != nil {
 		t.Fatalf("could not get episode lists: %v", errEL)
 	}
 
 	var csArrowFandomCom collection.Shows = &inmemory.Collection{}
 
-	for s, el := range episodeLists {
+	for s, el := range arrowFandomComEpisodeLists {
 		show, errEps := scrape.Episodes(s, el)
 		if errEps != nil {
 			t.Fatalf("could not get episode details for '%s': %v", s, errEps)
@@ -168,17 +158,15 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 		t.Fatalf("could not get episode details: %v", errIO)
 	}
 
-	t.Logf("arrowverse.info #eps: %d", len(arrowverseInfoEpisodes))
+	t.Logf("arrowverse.info  #eps: %d", len(arrowverseInfoEpisodes))
 	t.Logf("arrow.fandom.com #eps: %d", len(arrowFandomComEpisodes))
-
 
 	ignoreSeasonAndLink := cmpopts.IgnoreFields(models.Episode{}, "Season", "Link")
 
 	for i := 0; i < len(arrowverseInfoEpisodes) && i < len(arrowFandomComEpisodes); i++ {
-		t.Logf("i: %d", i)
 
 		if diff := cmp.Diff(arrowverseInfoEpisodes[i], arrowFandomComEpisodes[i], ignoreSeasonAndLink); diff != "" {
-			t.Logf("\narrowverse.info:  (%s) '%#v'\narrow.fandom.com: (%s) '%#v'",
+			t.Logf("\narrowverse.info:  (%s) '%#v'\narrow.fandom.com: (%s) '%#v'\n%[2]s\n%[4]s",
 				arrowverseInfoEpisodes[i].Season.Show.Name, arrowverseInfoEpisodes[i],
 				arrowFandomComEpisodes[i].Season.Show.Name, arrowFandomComEpisodes[i])
 			t.Fatalf("Mismatch (-arrowverse.info[%03[1]d] +arrow.fandom.com[%03[1]d]):\n%[2]s", i, diff)
