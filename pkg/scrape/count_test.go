@@ -6,6 +6,7 @@ import (
 
 	"github.com/matryer/is"
 
+	"go.jlucktay.dev/arrowverse/pkg/models"
 	"go.jlucktay.dev/arrowverse/pkg/scrape"
 )
 
@@ -15,7 +16,7 @@ func TestEpisodeNumbers(t *testing.T) {
 	is := is.New(t)
 
 	// Store show/season/episode details for seasons that have finished airing completely.
-	showSeasonEpisodes := map[string]map[int]int{
+	showSeasonEpisodes := map[models.ShowName]map[int]int{
 		"Arrow":                     {1: 23, 2: 23, 3: 23, 4: 23, 5: 23, 6: 23, 7: 22, 8: 10},
 		"Batwoman":                  {1: 20},
 		"Birds of Prey":             {1: 13},
@@ -37,7 +38,7 @@ func TestEpisodeNumbers(t *testing.T) {
 		// Pin! ref: https://github.com/golang/go/wiki/CommonMistakes#using-reference-to-loop-iterator-variable
 		s, el := s, el
 
-		t.Run(s, func(t *testing.T) {
+		t.Run(string(s), func(t *testing.T) {
 			// Don't use .Parallel() without pinning
 			t.Parallel()
 

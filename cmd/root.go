@@ -13,6 +13,7 @@ import (
 
 	"go.jlucktay.dev/arrowverse/pkg/collection"
 	"go.jlucktay.dev/arrowverse/pkg/collection/inmemory"
+	"go.jlucktay.dev/arrowverse/pkg/models"
 	"go.jlucktay.dev/arrowverse/pkg/scrape"
 )
 
@@ -68,21 +69,21 @@ episode watch order of all TV shows in DC's Arrowverse.`,
 			}
 		}
 
-		includedShows := []string{
-			"Arrow",
-			"Batwoman",
-			"Black Lightning",
-			"Constantine",
-			"DC's Legends of Tomorrow",
-			"Freedom Fighters: The Ray",
-			"Supergirl",
-			"The Flash (The CW)",
-			"Vixen",
-		}
+		includedShows := []models.ShowName{
+			models.Arrow,
+			models.Batwoman,
+			models.BlackLightning,
+			models.Constantine,
+			models.DCsLegendsOfTomorrow,
+			models.FreedomFightersTheRay,
+			models.Supergirl,
+			models.TheFlashTheCW,
+			models.Vixen,
 
-		// Excluded shows:
-		// "Birds of Prey"
-		// "The Flash (CBS)"
+			// // These two Arrowverse shows aren't included by default
+			// models.BirdsOfPrey,
+			// models.TheFlashCBS,
+		}
 
 		csio, errIO := cs.InOrder(includedShows...)
 		if errIO != nil {

@@ -6,16 +6,18 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gocolly/colly/v2"
+
+	"go.jlucktay.dev/arrowverse/pkg/models"
 )
 
 // EpisodeLists will retrieve URLs of all of the 'List of ... episodes' for shows that are available on the wiki.
-func EpisodeLists() (map[string]string, error) {
+func EpisodeLists() (map[models.ShowName]string, error) {
 	const (
 		checkPrefix = "List of "
 		checkSuffix = " episodes"
 	)
 
-	episodeListURLs := map[string]string{}
+	episodeListURLs := map[models.ShowName]string{}
 
 	c := colly.NewCollector(
 		colly.AllowedDomains(allowedDomain),
@@ -41,7 +43,11 @@ func EpisodeLists() (map[string]string, error) {
 				showName := strings.TrimPrefix(a.Text, checkPrefix)
 				showName = strings.TrimSuffix(showName, checkSuffix)
 
-				episodeListURLs[showName] = a.Request.AbsoluteURL(a.Attr("href"))
+				if !models.ValidShowName(showName) {
+					return
+				}
+
+				episodeListURLs[models.ShowName(showName)] = a.Request.AbsoluteURL(a.Attr("href"))
 			})
 	})
 

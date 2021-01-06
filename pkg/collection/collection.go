@@ -9,12 +9,12 @@ type Shows interface {
 	// Add a show to the collection.
 	Add(*models.Show) error
 	// AddSeason to the given show in the collection.
-	AddSeason(show string, season *models.Season) error
+	AddSeason(show models.ShowName, season *models.Season) error
 	// AddEpisode to the given show's season in the collection.
-	AddEpisode(show string, season int, episode *models.Episode) error
+	AddEpisode(show models.ShowName, season int, episode *models.Episode) error
 
 	// InOrder will return episodes (limited to the given show(s) if any) in airdate order.
-	InOrder(shows ...string) ([]models.Episode, error)
+	InOrder(shows ...models.ShowName) ([]models.Episode, error)
 
 	// Count returns the number of shows in the collection.
 	Count() (int, error)
@@ -24,7 +24,7 @@ type Shows interface {
 	GetAll() ([]*models.Show, error)
 
 	// SeasonCount returns the number of seasons for the given show in the collection.
-	SeasonCount(show string) (int, error)
+	SeasonCount(show models.ShowName) (int, error)
 	// GetSeason returns the whole season for the given show in the collection.
 	GetSeason(show string, season int) (*models.Season, error)
 	// GetAllSeasons returns all seasons in the collection for the given show.

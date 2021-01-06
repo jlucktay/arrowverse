@@ -17,7 +17,7 @@ import (
 )
 
 // Episodes will retrieve details for all of the given show's episodes from the wiki.
-func Episodes(show, episodeListURL string) (*models.Show, error) {
+func Episodes(show models.ShowName, episodeListURL string) (*models.Show, error) {
 	c := colly.NewCollector(
 		colly.AllowedDomains(allowedDomain),
 		colly.MaxDepth(0),

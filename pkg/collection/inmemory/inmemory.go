@@ -3,7 +3,6 @@ package inmemory
 
 import (
 	"sort"
-	"strings"
 
 	"go.jlucktay.dev/arrowverse/pkg/models"
 )
@@ -20,9 +19,9 @@ func (c *Collection) Add(s *models.Show) error {
 }
 
 // AddSeason to the given show in the collection.
-func (c *Collection) AddSeason(show string, season *models.Season) error {
+func (c *Collection) AddSeason(show models.ShowName, season *models.Season) error {
 	for i := range c.Shows {
-		if strings.EqualFold(c.Shows[i].Name, show) {
+		if c.Shows[i].Name == show {
 			season.Show = &c.Shows[i]
 			c.Shows[i].Seasons = append(c.Shows[i].Seasons, *season)
 
@@ -38,9 +37,9 @@ func (c *Collection) AddSeason(show string, season *models.Season) error {
 }
 
 // AddEpisode to the given show's season in the collection.
-func (c *Collection) AddEpisode(show string, season int, episode *models.Episode) error {
+func (c *Collection) AddEpisode(show models.ShowName, season int, episode *models.Episode) error {
 	for i := range c.Shows {
-		if strings.EqualFold(c.Shows[i].Name, show) {
+		if c.Shows[i].Name == show {
 			for j := range c.Shows[i].Seasons {
 				if c.Shows[i].Seasons[j].Number == season {
 					episode.Season = &c.Shows[i].Seasons[j]
@@ -67,7 +66,7 @@ func (c *Collection) AddEpisode(show string, season int, episode *models.Episode
 }
 
 // InOrder will return episodes (limited to the given show(s) if any) in airdate order.
-func (c *Collection) InOrder(shows ...string) ([]models.Episode, error) {
+func (c *Collection) InOrder(shows ...models.ShowName) ([]models.Episode, error) {
 	ret := []models.Episode{}
 
 	for i := range c.Shows {
@@ -113,7 +112,7 @@ func (c *Collection) GetAll() ([]*models.Show, error) {
 }
 
 // SeasonCount returns the number of seasons for the given show in the collection.
-func (c *Collection) SeasonCount(show string) (int, error) {
+func (c *Collection) SeasonCount(show models.ShowName) (int, error) {
 	panic("not implemented") // TODO: Implement
 }
 
