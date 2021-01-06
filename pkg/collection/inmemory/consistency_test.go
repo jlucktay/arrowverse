@@ -1,6 +1,7 @@
 package inmemory_test
 
 import (
+	"fmt"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -21,8 +22,6 @@ import (
 )
 
 func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
-	t.SkipNow()
-
 	const (
 		host    = "arrowverse.info"
 		fullURL = "https://" + host
@@ -163,8 +162,8 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 
 	ignoreSeasonAndLink := cmpopts.IgnoreFields(models.Episode{}, "Season", "Link")
 
-	for i := 0; i < len(arrowverseInfoEpisodes) && i < len(arrowFandomComEpisodes); i++ {
-
+	for i := 0; i < len(arrowverseInfoEpisodes) && i < len(arrowFandomComEpisodes) &&
+		arrowverseInfoEpisodes[i].Airdate.Before(time.Now()) && arrowFandomComEpisodes[i].Airdate.Before(time.Now()); i++ {
 		if diff := cmp.Diff(arrowverseInfoEpisodes[i], arrowFandomComEpisodes[i], ignoreSeasonAndLink); diff != "" {
 			t.Logf("\narrowverse.info:  (%s) '%#v'\narrow.fandom.com: (%s) '%#v'\n%[2]s\n%[4]s",
 				arrowverseInfoEpisodes[i].Season.Show.Name, arrowverseInfoEpisodes[i],

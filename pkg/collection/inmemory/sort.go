@@ -1,6 +1,7 @@
 package inmemory
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -52,6 +53,14 @@ var (
 			models.Batwoman,
 			models.Supergirl,
 		},
+
+		2020: {
+			models.Batwoman,
+			models.Supergirl,
+			models.TheFlashTheCW,
+			models.Arrow,
+			models.DCsLegendsOfTomorrow,
+		},
 	}
 )
 
@@ -62,57 +71,60 @@ func (a ByAirdate) Len() int      { return len(a) }
 func (a ByAirdate) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
 func (a ByAirdate) Less(i, j int) bool {
-	// If the two episodes are from the same show, go by airdate or overall episode number
-	if a[i].Season.Show.Name == a[j].Season.Show.Name {
-		return a[i].Airdate.Before(a[j].Airdate) || a[i].EpisodeOverall < a[j].EpisodeOverall
-	}
-
-	// So now the two episodes aren't from the same show, but could be multi-part
-	if !rePart.MatchString(a[i].Name) || !rePart.MatchString(a[j].Name) {
-		// At this point, they're not from the same show nor are they multi-part, so we check the year they both aired
-		if a[i].Airdate.Year() != a[j].Airdate.Year() {
-			return a[i].Airdate.Before(a[j].Airdate)
-		}
-
-		// They aired in the same year, so we may need to check the air order which is different in different years
-		checkAirOrderYear := 0
-		for year := range airOrderByYear {
-			if year == a[i].Airdate.Year() && year == a[j].Airdate.Year() {
-				checkAirOrderYear = year
-				break
-			}
-		}
-
-		if checkAirOrderYear == 0 {
-			return a[i].Airdate.Before(a[j].Airdate)
-		}
-
-		for _, showname := range airOrderByYear[checkAirOrderYear] {
-			if a[i].Season.Show.Name == showname {
-				return true
-			}
-			if a[j].Season.Show.Name == showname {
-				return false
-			}
-		}
-
-		// Neither show name turned up in the air orderings, so fall back to airdate
+	// KISS; compare airdates first, and ONLY if they differ, go ahead with other logic
+	if !a[i].Airdate.Equal(a[j].Airdate) {
 		return a[i].Airdate.Before(a[j].Airdate)
 	}
 
-	// At this point, both episode titles match the regex and contain '... Part ...', and are not from the same show
-	iMatches := rePart.FindStringSubmatch(a[i].Name)
-	jMatches := rePart.FindStringSubmatch(a[j].Name)
-
-	titleIndex := rePart.SubexpIndex(multiPartTitle.String())
-
-	// True if the multi-episode series has the same title, e.g. 'Crisis on Infinite Earths'
-	if iMatches[titleIndex] == jMatches[titleIndex] {
-		partNumberIndex := rePart.SubexpIndex(multiPartNumber.String())
-
-		return numbers.Replace(iMatches[partNumberIndex]) < numbers.Replace(jMatches[partNumberIndex])
+	// If the two episodes are from the same show, go by overall episode number
+	if a[i].Season.Show.Name == a[j].Season.Show.Name {
+		return a[i].EpisodeOverall < a[j].EpisodeOverall
 	}
 
-	// Otherwise, fall back on remaining logic
-	return a[i].Airdate.Before(a[j].Airdate) || a[i].EpisodeOverall < a[j].EpisodeOverall
+	// So now the two episodes aren't from the same show, but have the same airdate, and could be a multi-part/crossover
+	if rePart.MatchString(a[i].Name) && rePart.MatchString(a[j].Name) {
+		// At this point, both episode titles match the regex and contain '... Part ...', and are not from the same show
+		iMatches := rePart.FindStringSubmatch(a[i].Name)
+		jMatches := rePart.FindStringSubmatch(a[j].Name)
+
+		titleIndex := rePart.SubexpIndex(multiPartTitle.String())
+
+		// True if the multi-part/crossover has the same title, e.g. 'Crisis on Infinite Earths'
+		if iMatches[titleIndex] == jMatches[titleIndex] {
+			partNumberIndex := rePart.SubexpIndex(multiPartNumber.String())
+
+			iPartNumber := numbers.Replace(iMatches[partNumberIndex])
+			jPartNumber := numbers.Replace(jMatches[partNumberIndex])
+
+			return iPartNumber < jPartNumber
+		}
+
+		// Fall through to remaining logic
+	}
+
+	// At this point, they're not from the same show nor are they part of the same multi-part/crossover, but they did air
+	// on the same date, so we need to go through the air order, which is different in different years
+	checkAirOrderYear := 0
+	for year := range airOrderByYear {
+		if year == a[i].Airdate.Year() && year == a[j].Airdate.Year() {
+			checkAirOrderYear = year
+			break
+		}
+	}
+
+	if checkAirOrderYear == 0 {
+		return a[i].Airdate.Before(a[j].Airdate)
+	}
+
+	for _, showname := range airOrderByYear[checkAirOrderYear] {
+		if a[i].Season.Show.Name == showname {
+			return true
+		}
+		if a[j].Season.Show.Name == showname {
+			return false
+		}
+	}
+
+	// Neither show name turned up in the air orderings, so ... TODO?
+	panic(fmt.Sprintf("Not sure what to do with these two episodes at this point:\n%s\n%s\n", a[i], a[j]))
 }
