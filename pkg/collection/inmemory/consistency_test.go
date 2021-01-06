@@ -12,6 +12,7 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/debug"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"go.jlucktay.dev/arrowverse/pkg/collection"
 	"go.jlucktay.dev/arrowverse/pkg/collection/inmemory"
@@ -43,6 +44,8 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 	// Create somewhere to store the shows
 	var csArrowverseInfo collection.Shows = &inmemory.Collection{}
 
+	episodeOverallCounters := map[models.ShowName]int{}
+
 	c.OnHTML("body", func(body *colly.HTMLElement) {
 		body.ForEach("table#episode-list", func(_ int, table *colly.HTMLElement) {
 			table.ForEach("tbody tr.episode", func(_ int, tbody *colly.HTMLElement) {
@@ -53,18 +56,22 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 
 				itSel := util.NewIteratingSelector()
 
-				overall := tbody.ChildText(itSel.Next())
+				_ = strings.TrimSpace(tbody.ChildText(itSel.Next()))
 
-				showNameCandidate := tbody.ChildText(itSel.Next())
+				showNameCandidate := strings.TrimSpace(tbody.ChildText(itSel.Next()))
+				if showNameCandidate == "The Flash" {
+					showNameCandidate += " (The CW)"
+				}
+
 				if !models.ValidShowName(showNameCandidate) {
 					t.Fatalf("show name '%s' is not valid", showNameCandidate)
 				}
 
 				showName := models.ShowName(showNameCandidate)
 
-				seasonAndEpisode := strings.Map(fixScraped, tbody.ChildText(itSel.Next()))
-				ep.Name = tbody.ChildText(itSel.Next())
-				airdate := tbody.ChildText(itSel.Next())
+				seasonAndEpisode := strings.Map(fixScraped, strings.TrimSpace(tbody.ChildText(itSel.Next())))
+				ep.Name = strings.TrimSpace(tbody.ChildText(itSel.Next()))
+				airdate := strings.TrimSpace(tbody.ChildText(itSel.Next()))
 
 				if !reEpisode.MatchString(seasonAndEpisode) {
 					t.Fatalf("regex could not parse season/episode from third column: %s", seasonAndEpisode)
@@ -90,19 +97,18 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 					t.Fatalf("could not parse episode link '%s': %v", tbody.Attr("data-href"), err)
 				}
 
+				// https://www.eff.org/https-everywhere
+				if ep.Link.Scheme == "http" {
+					ep.Link.Scheme = "https"
+				}
+
 				seasonNumber, errConvSeason := strconv.Atoi(matches[seasonIndex])
 				if errConvSeason != nil {
 					t.Fatalf("could not parse season number '%s': %v", matches[seasonIndex], errConvSeason)
 				}
 
-				ep.Season = &models.Season{
-					Show: &models.Show{
-						Name: showName,
-					},
-					Number: seasonNumber,
-				}
-				t.Logf("[%3s] %s", overall, ep)
-				ep.Season = nil
+				episodeOverallCounters[showName] += 1
+				ep.EpisodeOverall = episodeOverallCounters[showName]
 
 				if err = csArrowverseInfo.AddEpisode(showName, seasonNumber, &ep); err != nil {
 					t.Fatalf("could not add episode '%#v' to collection: %v", ep, err)
@@ -165,10 +171,18 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 	t.Logf("arrowverse.info #eps: %d", len(arrowverseInfoEpisodes))
 	t.Logf("arrow.fandom.com #eps: %d", len(arrowFandomComEpisodes))
 
-	t.Skip("TODO: finish this comparison") // TODO
 
-	if diff := cmp.Diff(arrowverseInfoEpisodes, arrowFandomComEpisodes); diff != "" {
-		t.Errorf("Mismatch (-arrowverse.info +arrow.fandom.com):\n%s", diff)
+	ignoreSeasonAndLink := cmpopts.IgnoreFields(models.Episode{}, "Season", "Link")
+
+	for i := 0; i < len(arrowverseInfoEpisodes) && i < len(arrowFandomComEpisodes); i++ {
+		t.Logf("i: %d", i)
+
+		if diff := cmp.Diff(arrowverseInfoEpisodes[i], arrowFandomComEpisodes[i], ignoreSeasonAndLink); diff != "" {
+			t.Logf("\narrowverse.info:  (%s) '%#v'\narrow.fandom.com: (%s) '%#v'",
+				arrowverseInfoEpisodes[i].Season.Show.Name, arrowverseInfoEpisodes[i],
+				arrowFandomComEpisodes[i].Season.Show.Name, arrowFandomComEpisodes[i])
+			t.Fatalf("Mismatch (-arrowverse.info[%03[1]d] +arrow.fandom.com[%03[1]d]):\n%[2]s", i, diff)
+		}
 	}
 }
 
