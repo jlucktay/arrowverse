@@ -113,7 +113,13 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 
 	// Execute the visit to actually make the HTTP request(s), inside an exponential backoff with default settings
 	operation := func() error {
-		return c.Visit(fullURL)
+		var err error
+
+		if err = c.Visit(fullURL); err != nil {
+			fmt.Printf("error visiting: %v", err)
+		}
+
+		return err
 	}
 
 	if errVis := backoff.Retry(operation, backoff.NewExponentialBackOff()); errVis != nil {
