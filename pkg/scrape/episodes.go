@@ -83,7 +83,7 @@ func processTableBody(tbody *colly.HTMLElement, rowNum int, show *models.Show, s
 	epSeason = checkCiteSuffix.ReplaceAllString(epSeason, "")
 
 	// Handle the 'DC's Legends of Tomorrow' season 5 special episode
-	if epSeason == `—` && season.Number == 5 && show.Name == "DC's Legends of Tomorrow" {
+	if epSeason == `—` && season.Number == 5 && show.Name == models.DCsLegendsOfTomorrow {
 		ep.EpisodeSeason = 0
 	} else if ep.EpisodeSeason, err = strconv.Atoi(strings.TrimSpace(epSeason)); err != nil {
 		return nil, fmt.Errorf("%q: %w", epSeason, ErrCouldNotParse)
