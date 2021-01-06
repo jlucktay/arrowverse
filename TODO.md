@@ -16,8 +16,8 @@
 
 ## Consistency
 
-- grab episodes from <https://arrowverse.info> as well, and compare
-  - run comparison with the Google `go-cmp` library
+- ~~grab episodes from <https://arrowverse.info> as well, and compare~~
+  - ~~run comparison with the Google `go-cmp` library~~
 
 ## Miscellaneous
 
