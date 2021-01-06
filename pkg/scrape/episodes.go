@@ -71,7 +71,7 @@ func processTableBody(tbody *colly.HTMLElement, rowNum int, show *models.Show, s
 
 	var err error
 
-	ep, itSel := &models.Episode{}, util.NewIteratingSelector()
+	ep, itSel := &models.Episode{Season: season}, util.NewIteratingSelector()
 
 	// Trim citation link suffixes like "[3]"
 	checkCiteSuffix := regexp.MustCompile(`"?\[[0-9]+\]$`)
@@ -89,7 +89,7 @@ func processTableBody(tbody *colly.HTMLElement, rowNum int, show *models.Show, s
 	epSeason = checkCiteSuffix.ReplaceAllString(epSeason, "")
 
 	// Handle the 'DC's Legends of Tomorrow' season 5 special episode
-	if epSeason == `—` && season.Number == 5 && show.Name == models.DCsLegendsOfTomorrow {
+	if epSeason == `—` && ep.Season.Number == 5 && show.Name == models.DCsLegendsOfTomorrow {
 		ep.EpisodeSeason = 0
 	} else if ep.EpisodeSeason, err = strconv.Atoi(strings.TrimSpace(epSeason)); err != nil {
 		return nil, fmt.Errorf("%q: %w", epSeason, ErrCouldNotParse)
@@ -122,8 +122,6 @@ func processTableBody(tbody *colly.HTMLElement, rowNum int, show *models.Show, s
 			return nil, fmt.Errorf("%q: %w", epAirdate, ErrCouldNotParse)
 		}
 	}
-
-	ep.Season = season
 
 	return ep, nil
 }
