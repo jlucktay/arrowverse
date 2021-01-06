@@ -31,8 +31,8 @@ func Episodes(show models.ShowName, episodeListURL string) (*models.Show, error)
 			// Add a new season for this wikitable
 			s.Seasons = append(s.Seasons, models.Season{Show: s, Number: i + 1})
 
-			table.ForEach("tbody tr", func(_ int, tbody *colly.HTMLElement) {
-				ep, errPE := processTableBody(tbody, s, &s.Seasons[i])
+			table.ForEach("tbody tr", func(rowNum int, tbody *colly.HTMLElement) {
+				ep, errPE := processTableBody(tbody, rowNum, s, &s.Seasons[i])
 				if errPE != nil {
 					return
 				}
@@ -57,7 +57,8 @@ func Episodes(show models.ShowName, episodeListURL string) (*models.Show, error)
 	return s, nil
 }
 
-func processTableBody(tbody *colly.HTMLElement, show *models.Show, season *models.Season) (*models.Episode, error) {
+func processTableBody(tbody *colly.HTMLElement, rowNum int, show *models.Show, season *models.Season) (*models.Episode,
+	error) {
 	if tbody.DOM.ChildrenFiltered("th").Length() > 0 { // Skip <th> row
 		return nil, ErrNotEpisodeRow
 	}
@@ -74,6 +75,8 @@ func processTableBody(tbody *colly.HTMLElement, show *models.Show, season *model
 		if ep.EpisodeOverall, err = strconv.Atoi(strings.TrimSpace(raw)); err != nil {
 			return nil, fmt.Errorf("%q: %w", raw, ErrCouldNotParse)
 		}
+	} else {
+		ep.EpisodeOverall = rowNum
 	}
 
 	epSeason := tbody.ChildText(itSel.Next())
