@@ -98,7 +98,7 @@ func (c *Collection) InOrder(shows ...models.ShowName) ([]models.Episode, error)
 
 // Count returns the number of shows in the collection.
 func (c *Collection) Count() (int, error) {
-	panic("not implemented") // TODO: Implement
+	return len(c.Shows), nil
 }
 
 // Get returns the given show from the collection.
@@ -113,7 +113,13 @@ func (c *Collection) GetAll() ([]*models.Show, error) {
 
 // SeasonCount returns the number of seasons for the given show in the collection.
 func (c *Collection) SeasonCount(show models.ShowName) (int, error) {
-	panic("not implemented") // TODO: Implement
+	for i := range c.Shows {
+		if c.Shows[i].Name == show {
+			return len(c.Shows[i].Seasons), nil
+		}
+	}
+
+	return -1, ErrNoSuchShow
 }
 
 // GetSeason returns the whole season for the given show in the collection.
