@@ -9,6 +9,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/golang/protobuf v1.4.3 // indirect
+	github.com/google/go-cmp v0.5.4
 	github.com/matryer/is v1.4.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.1.1

@@ -14,6 +14,11 @@
 - ~~refactor around [Cobra](https://github.com/spf13/cobra)~~
 - ~~run config through [Viper](https://github.com/spf13/viper)~~
 
+## Consistency
+
+- grab episodes from <https://arrowverse.info> as well, and compare
+  - run comparison with the Google `go-cmp` library
+
 ## Miscellaneous
 
 - `diff --recursive --exclude=.git --unidirectional-new-file . ~/git/github.com/jlucktay/template-go`
