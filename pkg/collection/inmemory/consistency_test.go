@@ -106,6 +106,18 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 					Show:   &models.Show{Name: showName},
 					Number: seasonNumber}
 
+				// Workaround for Black Lightning pedantry
+				if ep.Season.Show.Name == models.BlackLightning && ep.Season.Number == 3 &&
+					((ep.EpisodeSeason >= 2 && ep.EpisodeSeason <= 7) || (ep.EpisodeSeason >= 11 && ep.EpisodeSeason <= 13) ||
+						ep.EpisodeSeason == 15) && strings.HasPrefix(ep.Name, "The Book of ") {
+					lastColon := strings.LastIndex(ep.Name, ":")
+
+					if lastColon > -1 {
+						ep.Name = ep.Name[0:lastColon]
+					}
+				}
+				// Workaround for Black Lightning pedantry
+
 				arrowverseInfoEpisodes = append(arrowverseInfoEpisodes, ep)
 			})
 		})
