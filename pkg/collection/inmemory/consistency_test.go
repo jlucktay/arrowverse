@@ -36,6 +36,7 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 
 	// Create somewhere to store the list from arrowverse.info, and keep track of per-show overall episode number
 	var arrowverseInfoEpisodes []models.Episode
+
 	episodeOverallCounters := map[models.ShowName]int{}
 
 	c.OnHTML("body", func(body *colly.HTMLElement) {
@@ -99,12 +100,13 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 					t.Fatalf("could not parse season number '%s': %v", matches[seasonIndex], errConvSeason)
 				}
 
-				episodeOverallCounters[showName] += 1
+				episodeOverallCounters[showName]++
 				ep.EpisodeOverall = episodeOverallCounters[showName]
 
 				ep.Season = &models.Season{
 					Show:   &models.Show{Name: showName},
-					Number: seasonNumber}
+					Number: seasonNumber,
+				}
 
 				// Workaround for Black Lightning pedantry
 				if ep.Season.Show.Name == models.BlackLightning && ep.Season.Number == 3 &&
@@ -131,7 +133,7 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 			fmt.Printf("error visiting: %v", err)
 		}
 
-		return err
+		return fmt.Errorf("error visiting: %w", err)
 	}
 
 	if errVis := backoff.Retry(operation, backoff.NewExponentialBackOff()); errVis != nil {

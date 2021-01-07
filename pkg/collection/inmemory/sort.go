@@ -98,16 +98,17 @@ func (a ByAirdate) Less(i, j int) bool {
 
 			return iPartNumber < jPartNumber
 		}
-
-		// Fall through to remaining logic
 	}
 
-	// At this point, they're not from the same show nor are they part of the same multi-part/crossover, but they did air
-	// on the same date, so we need to go through the air order, which is different in different years
+	// If the previous block has not returned and fallen through to this logic, at this point they're not from the same
+	// show nor are they part of the same multi-part/crossover, but they did air on the same date, so we need to go
+	// through the air order, which is different in different years
 	checkAirOrderYear := 0
+
 	for year := range airOrderByYear {
-		if year == a[i].Airdate.Year() && year == a[j].Airdate.Year() {
+		if year == a[i].Airdate.Year() {
 			checkAirOrderYear = year
+
 			break
 		}
 	}
@@ -117,10 +118,11 @@ func (a ByAirdate) Less(i, j int) bool {
 	}
 
 	for _, showname := range airOrderByYear[checkAirOrderYear] {
-		if a[i].Season.Show.Name == showname {
+		if showname == a[i].Season.Show.Name {
 			return true
 		}
-		if a[j].Season.Show.Name == showname {
+
+		if showname == a[j].Season.Show.Name {
 			return false
 		}
 	}

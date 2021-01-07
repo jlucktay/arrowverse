@@ -2,7 +2,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -32,13 +31,11 @@ episode watch order of all TV shows in DC's Arrowverse.`,
 		if len(args) > 0 {
 			sb := strings.Builder{}
 
-			fmt.Fprintln(&sb, "unknown CLI argument(s):")
-
 			for i := range args {
 				fmt.Fprintf(&sb, "- %s\n", args[i])
 			}
 
-			return errors.New(sb.String())
+			return fmt.Errorf("%w:\n%s", ErrUnknownCLIArguments, sb.String())
 		}
 
 		return nil
@@ -48,7 +45,7 @@ episode watch order of all TV shows in DC's Arrowverse.`,
 	SilenceErrors:      false,
 	SilenceUsage:       false,
 
-	SuggestionsMinimumDistance: 3,
+	SuggestionsMinimumDistance: 3, //nolint:gomnd // Increase from default of 2
 
 	Run: func(cmd *cobra.Command, _ []string) {
 		episodeLists, errEL := scrape.EpisodeLists()
@@ -91,7 +88,7 @@ episode watch order of all TV shows in DC's Arrowverse.`,
 		}
 
 		for i := range csio {
-			if csio[i].Airdate.Year() < 5252 {
+			if csio[i].Airdate.Year() < 5252 { //nolint:gomnd // https://dc.fandom.com/wiki/52#52
 				fmt.Fprintf(cmd.OutOrStdout(), "[%03d] %s\n", i, csio[i])
 			}
 		}

@@ -1,6 +1,7 @@
 package inmemory_test
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 
@@ -46,7 +47,7 @@ func getEpisodes() (collection.Shows, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not get episodes: %w", err)
 	}
 
 	return cs, nil

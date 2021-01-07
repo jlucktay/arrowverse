@@ -53,7 +53,7 @@ func Episodes(show models.ShowName, episodeListURL string) (*models.Show, error)
 			fmt.Printf("error visiting: %v", err)
 		}
 
-		return err
+		return fmt.Errorf("error visiting: %w", err)
 	}
 
 	if errVis := backoff.Retry(operation, backoff.NewExponentialBackOff()); errVis != nil {
