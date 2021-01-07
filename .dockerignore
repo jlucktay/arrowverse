@@ -4,3 +4,7 @@ arrowverse
 # Makefile things
 /out/
 /tmp/
+
+# Git metadata
+.git
+.gitignore
