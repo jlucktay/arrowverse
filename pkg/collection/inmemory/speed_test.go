@@ -8,6 +8,7 @@ import (
 
 	"go.jlucktay.dev/arrowverse/pkg/collection"
 	"go.jlucktay.dev/arrowverse/pkg/collection/inmemory"
+	"go.jlucktay.dev/arrowverse/pkg/models"
 	"go.jlucktay.dev/arrowverse/pkg/scrape"
 )
 
@@ -24,26 +25,21 @@ func getEpisodes() (collection.Shows, error) {
 	var err error
 
 	scrapeOnce.Do(func() {
+		var episodeLists map[models.ShowName]string
 		cs = &inmemory.Collection{}
 
-		episodeLists, errEL := scrape.EpisodeLists()
-		if errEL != nil {
-			err = errEL
-
+		if episodeLists, err = scrape.EpisodeLists(); err != nil {
 			return
 		}
 
 		for s, el := range episodeLists {
-			show, errEps := scrape.Episodes(s, el)
-			if errEps != nil {
-				err = errEps
+			var show *models.Show
 
+			if show, err = scrape.Episodes(s, el); err != nil {
 				return
 			}
 
-			if errAdd := cs.Add(show); errAdd != nil {
-				err = errAdd
-
+			if err = cs.Add(show); err != nil {
 				return
 			}
 		}
