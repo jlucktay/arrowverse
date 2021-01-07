@@ -30,7 +30,7 @@ COPY go.mod go.sum ./
 #   go get -v "${pb/@/\/...@}"; fi
 
 # Download and precompile all third party libraries (protobuf will be dealt with indirectly)
-RUN go mod graph | awk '{if ($1 !~ "@") print $2}' | grep -v "google.golang.org/protobuf" | xargs go get -v
+RUN go mod graph | awk '{if ($1 !~ "@" && $2 !~ "^google.golang.org/protobuf@") print $2}' | xargs go get -v
 
 # Add the sources
 COPY . .
@@ -39,7 +39,7 @@ COPY . .
 # (re)compilations will leverage the same cached layer(s)
 RUN go build -v -o /bin/arrowverse
 
-FROM scratch
+FROM scratch AS runner
 
 # Bring common CA certificates and binary over
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
