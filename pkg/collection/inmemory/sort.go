@@ -100,9 +100,9 @@ func (a ByAirdate) Less(i, j int) bool {
 		}
 	}
 
-	// If the previous block has not returned and fallen through to this logic, at this point they're not from the same
-	// show nor are they part of the same multi-part/crossover, but they did air on the same date, so we need to go
-	// through the air order, which is different in different years
+	// If the previous block has not returned and flow has fallen through to this logic, at this point the two episodes
+	// are not from the same show nor are they part of the same multi-part/crossover, but they did air on the same date
+	// so we need to go through the air order, which is different in different years
 	checkAirOrderYear := 0
 
 	for year := range airOrderByYear {
