@@ -45,7 +45,7 @@ func Episodes(show models.ShowName, episodeListURL string) (*models.Show, error)
 		})
 	})
 
-	// Execute the visit to actually make the HTTP request(s), inside an exponential backoff with default settings
+	// Execute the visit to actually make the HTTP request(s), inside an exponential backoff
 	operation := func() error {
 		var err error
 
@@ -57,7 +57,11 @@ func Episodes(show models.ShowName, episodeListURL string) (*models.Show, error)
 		return err
 	}
 
-	if errVis := backoff.Retry(operation, backoff.NewExponentialBackOff()); errVis != nil {
+	eb := backoff.NewExponentialBackOff()
+	eb.MaxInterval = time.Second * 10
+	eb.MaxElapsedTime = time.Minute
+
+	if errVis := backoff.Retry(operation, eb); errVis != nil {
 		return nil, fmt.Errorf("error while visiting %s: %w", episodeListURL, errVis)
 	}
 

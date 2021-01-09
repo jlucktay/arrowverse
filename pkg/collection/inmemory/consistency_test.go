@@ -129,7 +129,7 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 		})
 	})
 
-	// Execute the visit to actually make the HTTP request(s), inside an exponential backoff with default settings
+	// Execute the visit to actually make the HTTP request(s), inside an exponential backoff
 	operation := func() error {
 		var err error
 
@@ -141,8 +141,12 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 		return err
 	}
 
-	if errVis := backoff.Retry(operation, backoff.NewExponentialBackOff()); errVis != nil {
-		t.Fatalf("error while visiting %s: %v", fullURL, errVis)
+	eb := backoff.NewExponentialBackOff()
+	eb.MaxInterval = time.Second * 10
+	eb.MaxElapsedTime = time.Minute
+
+	if errRetry := backoff.Retry(operation, eb); errRetry != nil {
+		t.Fatalf("error while visiting %s: %v", fullURL, errRetry)
 	}
 
 	includedShows := []models.ShowName{
