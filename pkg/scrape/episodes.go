@@ -49,11 +49,12 @@ func Episodes(show models.ShowName, episodeListURL string) (*models.Show, error)
 	operation := func() error {
 		var err error
 
-		if err = c.Visit(episodeListURL); err != nil {
-			fmt.Printf("error visiting: %v", err)
+		if errVisit := c.Visit(episodeListURL); errVisit != nil {
+			err = fmt.Errorf("error visiting '%s': %w", episodeListURL, errVisit)
+			fmt.Println(err)
 		}
 
-		return fmt.Errorf("error visiting: %w", err)
+		return err
 	}
 
 	if errVis := backoff.Retry(operation, backoff.NewExponentialBackOff()); errVis != nil {

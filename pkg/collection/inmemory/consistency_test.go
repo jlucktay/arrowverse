@@ -133,11 +133,12 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 	operation := func() error {
 		var err error
 
-		if err = c.Visit(fullURL); err != nil {
-			fmt.Printf("error visiting: %v", err)
+		if errVisit := c.Visit(fullURL); errVisit != nil {
+			err = fmt.Errorf("error visiting '%s': %w", fullURL, errVisit)
+			t.Log(err)
 		}
 
-		return fmt.Errorf("error visiting: %w", err)
+		return err
 	}
 
 	if errVis := backoff.Retry(operation, backoff.NewExponentialBackOff()); errVis != nil {

@@ -55,11 +55,12 @@ func EpisodeLists() (map[models.ShowName]string, error) {
 	operation := func() error {
 		var err error
 
-		if err = c.Visit(categoryListsURL); err != nil {
-			fmt.Printf("error visiting: %v", err)
+		if errVisit := c.Visit(categoryListsURL); errVisit != nil {
+			err = fmt.Errorf("error visiting '%s': %w", categoryListsURL, errVisit)
+			fmt.Println(err)
 		}
 
-		return fmt.Errorf("error visiting: %w", err)
+		return err
 	}
 
 	if errVis := backoff.Retry(operation, backoff.NewExponentialBackOff()); errVis != nil {
