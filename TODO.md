@@ -8,6 +8,7 @@
 - gin up a TypeScript/React web app FE
   - add *'Watched'* checkboxes for every episode
   - retain check status with [Web Storage](https://caniuse.com/namevalue-storage)
+  - throw [Fiber](https://github.com/gofiber/fiber) into the mix as well?
 
 ## Structure
 
