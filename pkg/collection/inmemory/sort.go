@@ -55,8 +55,8 @@ var (
 		},
 
 		2020: {
-			models.Batwoman,
 			models.Supergirl,
+			models.Batwoman,
 			models.TheFlashTheCW,
 			models.Arrow,
 			models.DCsLegendsOfTomorrow,
