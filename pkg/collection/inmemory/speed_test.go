@@ -2,12 +2,12 @@ package inmemory_test
 
 import (
 	"fmt"
+	"sort"
 	"sync"
 	"testing"
 
 	"github.com/matryer/is"
 
-	"go.jlucktay.dev/arrowverse/pkg/collection"
 	"go.jlucktay.dev/arrowverse/pkg/collection/inmemory"
 	"go.jlucktay.dev/arrowverse/pkg/models"
 	"go.jlucktay.dev/arrowverse/pkg/scrape"
@@ -18,16 +18,16 @@ var (
 	// cf. https://dave.cheney.net/2013/06/30/how-to-write-benchmarks-in-go
 	result int
 
-	cs         collection.Shows
+	episodes   []models.Episode
 	scrapeOnce sync.Once
 )
 
-func getEpisodes() (collection.Shows, error) {
+func populateCollection() error {
 	var err error
 
 	scrapeOnce.Do(func() {
 		var episodeLists map[models.ShowName]string
-		cs = &inmemory.Collection{}
+		episodes = make([]models.Episode, 0)
 
 		if episodeLists, err = scrape.EpisodeLists(); err != nil {
 			return
@@ -40,45 +40,49 @@ func getEpisodes() (collection.Shows, error) {
 				return
 			}
 
-			if err = cs.Add(show); err != nil {
-				return
+			for seasonIndex := range show.Seasons {
+				episodes = append(episodes, show.Seasons[seasonIndex].Episodes...)
 			}
 		}
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("could not get episodes: %w", err)
+		return fmt.Errorf("could not populate collection: %w", err)
 	}
 
-	return cs, nil
+	return nil
 }
 
-// benchmarkInOrder is private so as not to be invoked directly, but by wrappers requesting different size data sets.
-// TODO:
-// - wire up the int parameter to actually do the different size data sets thing
-// - bench sort.Sort against sort.Stable inside the .InOrder() call
-func benchmarkInOrder(_ int, b *testing.B) {
+// benchmarkSortByAirdate is private to only be invoked by wrappers requesting different size data sets.
+func benchmarkSortByAirdate(limit int, sortFn func(data sort.Interface), b *testing.B) {
+	var r int
+
 	is := is.New(b)
 
-	episodes, errGE := getEpisodes()
-	is.NoErr(errGE)
+	is.NoErr(populateCollection())
+	is.True(len(episodes) >= limit)
 
-	var r int
+	limitedSet := episodes[:limit]
 
 	b.ResetTimer() // If a benchmark needs some expensive setup before running, the timer may be reset
 
 	for n := 0; n < b.N; n++ {
-		episodesInOrder, errIO := episodes.InOrder()
-		is.NoErr(errIO)
+		sortFn(inmemory.ByAirdate(limitedSet))
 
-		r = len(episodesInOrder)
+		r = len(limitedSet[0].String())
 	}
 
 	result = r
 }
 
-func BenchmarkInOrder1(b *testing.B)  { benchmarkInOrder(1, b) }
-func BenchmarkInOrder2(b *testing.B)  { benchmarkInOrder(2, b) }
-func BenchmarkInOrder4(b *testing.B)  { benchmarkInOrder(4, b) }
-func BenchmarkInOrder8(b *testing.B)  { benchmarkInOrder(8, b) }
-func BenchmarkInOrder16(b *testing.B) { benchmarkInOrder(16, b) }
+func BenchmarkSortByAirdateSort32(b *testing.B)  { benchmarkSortByAirdate(32, sort.Sort, b) }
+func BenchmarkSortByAirdateSort64(b *testing.B)  { benchmarkSortByAirdate(64, sort.Sort, b) }
+func BenchmarkSortByAirdateSort128(b *testing.B) { benchmarkSortByAirdate(128, sort.Sort, b) }
+func BenchmarkSortByAirdateSort256(b *testing.B) { benchmarkSortByAirdate(256, sort.Sort, b) }
+func BenchmarkSortByAirdateSort512(b *testing.B) { benchmarkSortByAirdate(512, sort.Sort, b) }
+
+func BenchmarkSortByAirdateStable32(b *testing.B)  { benchmarkSortByAirdate(32, sort.Stable, b) }
+func BenchmarkSortByAirdateStable64(b *testing.B)  { benchmarkSortByAirdate(64, sort.Stable, b) }
+func BenchmarkSortByAirdateStable128(b *testing.B) { benchmarkSortByAirdate(128, sort.Stable, b) }
+func BenchmarkSortByAirdateStable256(b *testing.B) { benchmarkSortByAirdate(256, sort.Stable, b) }
+func BenchmarkSortByAirdateStable512(b *testing.B) { benchmarkSortByAirdate(512, sort.Stable, b) }

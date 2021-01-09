@@ -71,8 +71,8 @@ out/image-id: Dockerfile tmp/.linted.sentinel
 > DOCKER_BUILDKIT=1 docker build --tag="$${image_id}" .
 > echo "$${image_id}" > out/image-id
 
-# Benchmarks - run enough iterations of each benchmark to take 10 seconds
+# Benchmarks - run enough iterations of each benchmark to take a few seconds (default is 1s)
 tmp/.benchmarks-ran.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
-> go test ./... -bench=. -benchmem -benchtime=10s -run=DoNotRunTests
+> go test ./... -bench=. -benchmem -benchtime=3s -run=DoNotRunTests
 > touch $@
