@@ -54,7 +54,9 @@ func populateCollection() error {
 }
 
 // benchmarkSortByAirdate is private to only be invoked by wrappers requesting different size data sets.
-func benchmarkSortByAirdate(limit int, sortFn func(data sort.Interface), b *testing.B) {
+func benchmarkSortByAirdate(b *testing.B, limit int, sortFn func(data sort.Interface)) {
+	b.Helper()
+
 	var r int
 
 	is := is.New(b)
@@ -75,14 +77,14 @@ func benchmarkSortByAirdate(limit int, sortFn func(data sort.Interface), b *test
 	result = r
 }
 
-func BenchmarkSortByAirdateSort32(b *testing.B)  { benchmarkSortByAirdate(32, sort.Sort, b) }
-func BenchmarkSortByAirdateSort64(b *testing.B)  { benchmarkSortByAirdate(64, sort.Sort, b) }
-func BenchmarkSortByAirdateSort128(b *testing.B) { benchmarkSortByAirdate(128, sort.Sort, b) }
-func BenchmarkSortByAirdateSort256(b *testing.B) { benchmarkSortByAirdate(256, sort.Sort, b) }
-func BenchmarkSortByAirdateSort512(b *testing.B) { benchmarkSortByAirdate(512, sort.Sort, b) }
+func BenchmarkSortByAirdateSort32(b *testing.B)  { benchmarkSortByAirdate(b, 32, sort.Sort) }
+func BenchmarkSortByAirdateSort64(b *testing.B)  { benchmarkSortByAirdate(b, 64, sort.Sort) }
+func BenchmarkSortByAirdateSort128(b *testing.B) { benchmarkSortByAirdate(b, 128, sort.Sort) }
+func BenchmarkSortByAirdateSort256(b *testing.B) { benchmarkSortByAirdate(b, 256, sort.Sort) }
+func BenchmarkSortByAirdateSort512(b *testing.B) { benchmarkSortByAirdate(b, 512, sort.Sort) }
 
-func BenchmarkSortByAirdateStable32(b *testing.B)  { benchmarkSortByAirdate(32, sort.Stable, b) }
-func BenchmarkSortByAirdateStable64(b *testing.B)  { benchmarkSortByAirdate(64, sort.Stable, b) }
-func BenchmarkSortByAirdateStable128(b *testing.B) { benchmarkSortByAirdate(128, sort.Stable, b) }
-func BenchmarkSortByAirdateStable256(b *testing.B) { benchmarkSortByAirdate(256, sort.Stable, b) }
-func BenchmarkSortByAirdateStable512(b *testing.B) { benchmarkSortByAirdate(512, sort.Stable, b) }
+func BenchmarkSortByAirdateStable32(b *testing.B)  { benchmarkSortByAirdate(b, 32, sort.Stable) }
+func BenchmarkSortByAirdateStable64(b *testing.B)  { benchmarkSortByAirdate(b, 64, sort.Stable) }
+func BenchmarkSortByAirdateStable128(b *testing.B) { benchmarkSortByAirdate(b, 128, sort.Stable) }
+func BenchmarkSortByAirdateStable256(b *testing.B) { benchmarkSortByAirdate(b, 256, sort.Stable) }
+func BenchmarkSortByAirdateStable512(b *testing.B) { benchmarkSortByAirdate(b, 512, sort.Stable) }

@@ -65,7 +65,7 @@ func EpisodeLists() (map[models.ShowName]string, error) {
 	}
 
 	eb := backoff.NewExponentialBackOff()
-	eb.MaxInterval = time.Second * 10
+	eb.MaxInterval = time.Second * 10 //nolint:gomnd
 	eb.MaxElapsedTime = time.Minute
 
 	if errVis := backoff.Retry(operation, eb); errVis != nil {
