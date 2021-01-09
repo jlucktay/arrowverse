@@ -21,10 +21,11 @@ endif
 
 image_repository := "jlucktay/arrowverse"
 
-test: tmp/.tests-passed.sentinel
+test: tmp/.short-tests-passed.sentinel
+test-all: tmp/.all-tests-passed.sentinel
 lint: tmp/.linted.sentinel
 build: out/image-id
-.PHONY: test lint build
+.PHONY: test test-all lint build
 
 bench: tmp/.benchmarks-ran.sentinel
 .PHONY: bench
@@ -43,14 +44,19 @@ clean-docker:
 > rm -f ./out/image-id
 .PHONY: clean-docker
 
-# Tests - re-run if any Go files have changes since `tmp/.tests-passed.sentinel` was last touched.
-tmp/.tests-passed.sentinel: $(shell find . -type f -iname "*.go")
+# Tests - re-run short/all tests if any Go files have changed since the relevant sentinel file was last touched.
+tmp/.short-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
+> mkdir -p $(@D)
+> go test -short ./...
+> touch $@
+
+tmp/.all-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
 > go test ./...
 > touch $@
 
 # Lint - re-run if the tests have been re-run (and so, by proxy, whenever the source files have changed).
-tmp/.linted.sentinel: Dockerfile tmp/.tests-passed.sentinel
+tmp/.linted.sentinel: Dockerfile tmp/.short-tests-passed.sentinel
 > mkdir -p $(@D)
 > hadolint Dockerfile
 > find . -type f -iname "*.go" -exec gofmt -s -w "{}" +
@@ -66,7 +72,7 @@ out/image-id: Dockerfile tmp/.linted.sentinel
 > echo "$${image_id}" > out/image-id
 
 # Benchmarks - run enough iterations of each benchmark to take 10 seconds
-tmp/.benchmarks-ran.sentinel: tmp/.tests-passed.sentinel
+tmp/.benchmarks-ran.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
 > go test ./... -bench=. -benchmem -benchtime=10s -run=DoNotRunTests
 > touch $@
