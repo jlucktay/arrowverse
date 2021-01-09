@@ -11,6 +11,10 @@ import (
 )
 
 func TestEpisodeNumbers(t *testing.T) {
+	if testing.Short() {
+		t.Skip("sometimes takes a little while to scrape")
+	}
+
 	t.Parallel()
 
 	is := is.New(t)

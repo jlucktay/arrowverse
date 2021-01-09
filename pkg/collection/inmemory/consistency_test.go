@@ -22,6 +22,10 @@ import (
 )
 
 func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
+	if testing.Short() {
+		t.Skip("sometimes takes a little while to scrape")
+	}
+
 	const (
 		host    = "arrowverse.info"
 		fullURL = "https://" + host
