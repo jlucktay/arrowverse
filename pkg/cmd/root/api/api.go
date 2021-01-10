@@ -20,5 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-// Package cmd holds the root CLI command and all of its subcommands.
-package cmd
+// Package api holds the logic for the 'arrowverse api' subcommand.
+package api
+
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
+
+func NewCmd() *cobra.Command {
+	var apiCmd = &cobra.Command{
+		Use:   "api",
+		Short: "A brief description of your command",
+		Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+		Run: func(_ *cobra.Command, _ []string) {
+			fmt.Println("api called")
+		},
+	}
+
+	return apiCmd
+}

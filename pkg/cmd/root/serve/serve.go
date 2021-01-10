@@ -20,15 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-// Package cmd holds the execution path into the root CLI command.
-package cmd
+// Package serve holds the logic for the 'arrowverse serve' subcommand.
+package serve
 
 import (
-	"go.jlucktay.dev/arrowverse/pkg/cmd/root"
+	"fmt"
+
+	"github.com/spf13/cobra"
 )
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() error {
-	return root.NewCmd().Execute()
+func NewCmd() *cobra.Command {
+	var serveCmd = &cobra.Command{
+		Use:   "serve",
+		Short: "A brief description of your command",
+		Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+		Run: func(_ *cobra.Command, _ []string) {
+			fmt.Println("serve called")
+		},
+	}
+
+	return serveCmd
 }

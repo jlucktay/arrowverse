@@ -33,7 +33,7 @@ import (
 	"go.jlucktay.dev/arrowverse/pkg/scrape"
 )
 
-func runRoot(cmd *cobra.Command, _ []string) error {
+func ScrapeAndPrint(cmd *cobra.Command, _ []string) error {
 	episodeLists, errEL := scrape.EpisodeLists()
 	if errEL != nil {
 		return fmt.Errorf("could not get episode lists: %w", errEL)

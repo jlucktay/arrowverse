@@ -20,8 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package cmd
+package root
 
-import "errors"
+import (
+	"fmt"
+	"os"
 
-var ErrUnknownCLIArguments = errors.New("unknown CLI argument(s)")
+	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/viper"
+)
+
+var cfgFile string
+
+// initConfig reads in config file and ENV variables if set.
+func initConfig() {
+	viper.SetEnvPrefix("arrowverse")
+
+	if cfgFile != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
+	} else {
+		// Find home directory.
+		home, err := homedir.Dir()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		// Search config in home directory with name ".arrowverse" (without extension).
+		viper.AddConfigPath(home)
+		viper.SetConfigName(".arrowverse")
+	}
+
+	viper.AutomaticEnv() // read in environment variables that match
+
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
+}
