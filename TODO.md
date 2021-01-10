@@ -22,4 +22,16 @@
 
 ## Miscellaneous
 
+- flesh out the README
+  - Docker image
 - `diff --recursive --exclude=.git --unidirectional-new-file . ~/git/github.com/jlucktay/template-go`
+
+## Logging
+
+- wrap `zap` in [logr](https://github.com/go-logr/logr)
+
+## Publishing
+
+- <https://github.com/actions/starter-workflows/blob/main/ci/docker-image.yml>
+- <https://github.com/actions/starter-workflows/blob/main/ci/docker-publish.yml>
+  - further reading: <https://docs.github.com/en/free-pro-team@latest/packages/guides/configuring-docker-for-use-with-github-packages>
