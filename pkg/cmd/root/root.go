@@ -24,7 +24,6 @@ THE SOFTWARE.
 package root
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -34,42 +33,41 @@ import (
 	"go.jlucktay.dev/arrowverse/pkg/cmd/root/serve"
 )
 
+var cfgFile string
+
 func NewCmd() *cobra.Command {
 	// cmd represents the base command when called without any subcommands.
 	var cmd = &cobra.Command{
 		Use:   "arrowverse",
 		Short: "Arrowverse episode watch order web app",
 		Long: `Arrowverse runs a web app to guide visitors and help them keep track with an
-	episode watch order of all TV shows in DC's Arrowverse.`,
+episode watch order of all TV shows in DC's Arrowverse.
 
-		Example: "arrowverse --config=/opt/arrowverse/arrowverse-config.json",
+If no value is specified for the --config flag, the following locations will be
+searched in descending order of preference for a file named '` + cfgName + `.` + cfgType + `':
+ - the current working directory
+ - $HOME/.config/
+ - /etc/arrowverse/`,
 
-		Args: func(_ *cobra.Command, args []string) error {
-			if len(args) > 0 {
-				sb := strings.Builder{}
+		Example: "  arrowverse scrape\n" +
+			"  arrowverse serve --config=/opt/arrowverse/config." + cfgType,
 
-				for i := range args {
-					fmt.Fprintf(&sb, "- %s\n", args[i])
-				}
+		Args: cobra.MaximumNArgs(0),
 
-				return fmt.Errorf("%w:\n%s", ErrUnknownCLIArguments, sb.String())
-			}
 
-			return nil
-		},
+		PersistentPreRunE: initConfig,
+		RunE:              checkConfig,
 
-		DisableSuggestions: false,
-		SilenceErrors:      false,
-		SilenceUsage:       false,
-
+		SilenceErrors:              false,
+		SilenceUsage:               false,
+		DisableFlagParsing:         false,
+		DisableSuggestions:         false,
 		SuggestionsMinimumDistance: 3, //nolint:gomnd // Increase from default of 2
 	}
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here, will be global for your application.
-	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.arrowverse.yaml)")
-
-	cobra.OnInitialize(initConfig)
+	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "path to "+strings.ToUpper(cfgType)+" configuration file")
 
 	cmd.AddCommand(api.NewCmd())
 	cmd.AddCommand(scrape.NewCmd())

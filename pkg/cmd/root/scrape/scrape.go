@@ -35,6 +35,9 @@ func NewCmd() *cobra.Command {
 		Short: "Scrapes data to populate a collection and prints",
 		Long: `Scrapes data from a wiki website to populate an in-memory collection and then
 prints in a formatted fashion.`,
+
+		Args: cobra.MaximumNArgs(0),
+
 		Run: func(_ *cobra.Command, _ []string) {
 			fmt.Println("scrape called")
 		},
