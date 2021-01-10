@@ -20,8 +20,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+// Package cmd holds the root CLI command and all of its subcommands.
 package cmd
-
-import "errors"
-
-var ErrUnknownCLIArguments = errors.New("unknown CLI argument(s)")
