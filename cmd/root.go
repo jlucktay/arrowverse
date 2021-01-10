@@ -9,11 +9,6 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	"go.jlucktay.dev/arrowverse/pkg/collection"
-	"go.jlucktay.dev/arrowverse/pkg/collection/inmemory"
-	"go.jlucktay.dev/arrowverse/pkg/models"
-	"go.jlucktay.dev/arrowverse/pkg/scrape"
 )
 
 var cfgFile string
@@ -47,52 +42,7 @@ episode watch order of all TV shows in DC's Arrowverse.`,
 
 	SuggestionsMinimumDistance: 3, //nolint:gomnd // Increase from default of 2
 
-	Run: func(cmd *cobra.Command, _ []string) {
-		episodeLists, errEL := scrape.EpisodeLists()
-		if errEL != nil {
-			fmt.Fprintf(cmd.OutOrStderr(), "could not get episode lists: %v\n", errEL)
-		}
-
-		var cs collection.Shows = &inmemory.Collection{}
-
-		for s, el := range episodeLists {
-			show, errEps := scrape.Episodes(s, el)
-			if errEps != nil {
-				fmt.Fprintf(cmd.OutOrStderr(), "could not get episode details for '%s': %v\n", s, errEps)
-			}
-
-			if errAdd := cs.Add(show); errAdd != nil {
-				fmt.Fprintf(cmd.OutOrStderr(), "could not add '%s' details to collection: %v\n", show.Name, errAdd)
-			}
-		}
-
-		includedShows := []models.ShowName{
-			models.Arrow,
-			models.Batwoman,
-			models.BlackLightning,
-			models.Constantine,
-			models.DCsLegendsOfTomorrow,
-			models.FreedomFightersTheRay,
-			models.Supergirl,
-			models.TheFlashTheCW,
-			models.Vixen,
-
-			// // These two Arrowverse shows aren't included by default
-			// models.BirdsOfPrey,
-			// models.TheFlashCBS,
-		}
-
-		csio, errIO := cs.InOrder(includedShows...)
-		if errIO != nil {
-			fmt.Fprintf(cmd.OutOrStderr(), "could not get episode details: %v\n", errIO)
-		}
-
-		for i := range csio {
-			if csio[i].Airdate.Year() < 5252 { //nolint:gomnd // https://dc.fandom.com/wiki/52#52
-				fmt.Fprintf(cmd.OutOrStdout(), "[%03d] %s\n", i, csio[i])
-			}
-		}
-	},
+	RunE: runRoot,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
