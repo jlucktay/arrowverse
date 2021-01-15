@@ -23,4 +23,5 @@ THE SOFTWARE.
 // Package models defines the various types and structs we need.
 package models
 
+// AirdateLayout is the date format used on https://arrowverse.info and https://arrow.fandom.com
 const AirdateLayout = "January 2, 2006"

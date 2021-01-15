@@ -51,7 +51,7 @@ func initConfig(cmd *cobra.Command, _ []string) error {
 		// Find home directory.
 		home, errHomeDir := homedir.Dir()
 		if errHomeDir != nil {
-			return errHomeDir
+			return fmt.Errorf("could not get home directory: %w", errHomeDir)
 		}
 
 		// Expect config file name to be "arrowverse.<something>".
@@ -67,24 +67,23 @@ func initConfig(cmd *cobra.Command, _ []string) error {
 		viper.AddConfigPath("/etc/" + cfgName + "/")
 	}
 
-
 	// Read in environment variables that match 'ARROWVERSE_*'.
 	viper.AutomaticEnv()
 
 	// If a config file is found, (attempt to) read it in.
 	if errViperRead := viper.ReadInConfig(); errViperRead != nil {
-		_, osPE := errViperRead.(*os.PathError)
-		_, viperCFNFE := errViperRead.(viper.ConfigFileNotFoundError)
+		osPE := &os.PathError{}
+		viperCFNFE := viper.ConfigFileNotFoundError{}
 
-		if osPE || viperCFNFE {
+		if errors.As(errViperRead, &osPE) || errors.As(errViperRead, &viperCFNFE) {
 			if cfgFile != "" {
-				return fmt.Errorf("Config file '%s' could not be read at specified path: %w", cfgFile, errViperRead)
+				return fmt.Errorf("config file '%s' could not be read at specified path: %w", cfgFile, errViperRead)
 			}
 
 			return nil
 		}
 
-		return fmt.Errorf("Config file '%s' was found but another error occurred:\n%w",
+		return fmt.Errorf("config file '%s' was found but another error occurred: %w",
 			viper.ConfigFileUsed(), errViperRead)
 	}
 
@@ -101,7 +100,7 @@ func checkConfig(cmd *cobra.Command, _ []string) error {
 	vas := viper.AllSettings()
 
 	if len(vas) == 0 {
-		return errors.New("There are no established configuration values.")
+		return ErrNoConfValues
 	}
 
 	fmt.Fprintln(cmd.OutOrStdout(), "The following configuration values were established:")

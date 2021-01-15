@@ -30,7 +30,7 @@ import (
 )
 
 func NewCmd() *cobra.Command {
-	var serveCmd = &cobra.Command{
+	serveCmd := &cobra.Command{
 		Use:   "serve",
 		Short: "A brief description of your command",
 		Long: `A longer description that spans multiple lines and likely contains examples

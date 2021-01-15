@@ -35,9 +35,11 @@ func main() {
 	logger, errNP := zap.NewProduction()
 	if errNP != nil {
 		fmt.Fprintf(os.Stderr, "could not create new logger: %v", errNP)
+
 		return
 	}
-	defer logger.Sync() //nolint:errcheck
+
+	defer logger.Sync() //nolint:errcheck // Don't let the door hit you on the way out
 
 	if errExec := cmd.Execute(); errExec != nil {
 		logger.Error("failed in execute",

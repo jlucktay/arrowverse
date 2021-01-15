@@ -29,8 +29,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// NewCmd encapsulates the 'scrape' subcommand.
 func NewCmd() *cobra.Command {
-	var scrapeCmd = &cobra.Command{
+	scrapeCmd := &cobra.Command{
 		Use:   "scrape",
 		Short: "Scrapes data to populate a collection and prints",
 		Long: `Scrapes data from a wiki website to populate an in-memory collection and then

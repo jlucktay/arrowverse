@@ -37,7 +37,7 @@ var cfgFile string
 
 func NewCmd() *cobra.Command {
 	// cmd represents the base command when called without any subcommands.
-	var cmd = &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "arrowverse",
 		Short: "Arrowverse episode watch order web app",
 		Long: `Arrowverse runs a web app to guide visitors and help them keep track with an
@@ -53,7 +53,6 @@ searched in descending order of preference for a file named '` + cfgName + `.` +
 			"  arrowverse serve --config=/opt/arrowverse/config." + cfgType,
 
 		Args: cobra.MaximumNArgs(0),
-
 
 		PersistentPreRunE: initConfig,
 		RunE:              checkConfig,

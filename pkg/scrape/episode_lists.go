@@ -33,7 +33,7 @@ import (
 	"go.jlucktay.dev/arrowverse/pkg/models"
 )
 
-// EpisodeLists will retrieve URLs of all of the 'List of ... episodes' for shows that are available on the wiki.
+// EpisodeLists will retrieve URLs of all of the 'List of <show> episodes' for shows that are available on the wiki.
 func EpisodeLists() (map[models.ShowName]string, error) {
 	const (
 		checkPrefix = "List of "
@@ -53,7 +53,7 @@ func EpisodeLists() (map[models.ShowName]string, error) {
 			"li.category-page__member "+
 			"a.category-page__member-link",
 			func(_ int, a *colly.HTMLElement) {
-				// Only consider 'List of ... episodes' links
+				// Only consider 'List of <show> episodes' links
 				if !strings.HasPrefix(a.Text, checkPrefix) || !strings.HasSuffix(a.Text, checkSuffix) {
 					return
 				}

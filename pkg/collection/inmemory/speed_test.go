@@ -36,7 +36,7 @@ import (
 )
 
 var (
-	// result is stored in a package level variable so that the compiler cannot eliminate the Benchmark itself.
+	// Result is stored in a package level variable so that the compiler cannot eliminate the Benchmark itself.
 	// cf. https://dave.cheney.net/2013/06/30/how-to-write-benchmarks-in-go
 	result int
 
