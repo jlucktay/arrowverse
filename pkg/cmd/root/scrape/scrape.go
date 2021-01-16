@@ -24,9 +24,9 @@ THE SOFTWARE.
 package scrape
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+
+	"go.jlucktay.dev/arrowverse/pkg/cmd"
 )
 
 // NewCmd encapsulates the 'scrape' subcommand.
@@ -39,9 +39,7 @@ prints in a formatted fashion.`,
 
 		Args: cobra.MaximumNArgs(0),
 
-		Run: func(_ *cobra.Command, _ []string) {
-			fmt.Println("scrape called")
-		},
+		RunE: cmd.ScrapeAndPrint,
 	}
 
 	return scrapeCmd
