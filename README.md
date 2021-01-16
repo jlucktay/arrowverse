@@ -13,3 +13,4 @@ Internal layout of the CLI inspired in part by:
 
 - [`gh`](https://github.com/cli/cli)
 - [`kubectl`](https://github.com/kubernetes/kubernetes/tree/master/cmd/kubectl)
+- [Command Line Interface Guidelines](https://clig.dev)
