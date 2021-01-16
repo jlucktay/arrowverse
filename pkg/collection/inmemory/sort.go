@@ -71,14 +71,14 @@ var (
 			models.DCsLegendsOfTomorrow,
 			models.TheFlashTheCW,
 			models.Arrow,
-			models.BlackLightning,
 			models.Batwoman,
+			models.BlackLightning,
 			models.Supergirl,
 		},
 
 		2020: {
-			models.Supergirl,
 			models.Batwoman,
+			models.Supergirl,
 			models.TheFlashTheCW,
 			models.Arrow,
 			models.DCsLegendsOfTomorrow,

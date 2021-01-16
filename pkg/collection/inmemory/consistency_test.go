@@ -53,7 +53,7 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 		fullURL = "https://" + host
 	)
 
-	reEpisode := regexp.MustCompile(`^S(?P<season>[0-9]{2})E(?P<episode>[0-9]{2})$`)
+	reEpisode := regexp.MustCompile(`^S(?P<season>[0-9]{2})E(?P<episode>[0-9]{1,2})$`)
 
 	c := colly.NewCollector(
 		colly.AllowedDomains(host),
@@ -89,6 +89,11 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 				showName := models.ShowName(showNameCandidate)
 
 				seasonAndEpisode := strings.Map(fixScraped, strings.TrimSpace(tbody.ChildText(itSel.Next())))
+
+				// Necessary for: 595 Batwoman S02E1[1] Whatever Happened to Kate Kane? January 17, 2021 // TODO: remove
+				seasonAndEpisode = strings.TrimSuffix(seasonAndEpisode, "[1]")
+				// Necessary for: 595 Batwoman S02E1[1] Whatever Happened to Kate Kane? January 17, 2021 // TODO: remove
+
 				ep.Name = strings.TrimSpace(tbody.ChildText(itSel.Next()))
 				airdate := strings.TrimSpace(tbody.ChildText(itSel.Next()))
 
@@ -145,6 +150,12 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 					}
 				}
 				// Workaround for Black Lightning pedantry
+
+				// Special case for Legends S06E01
+				if ep.Season.Show.Name == models.DCsLegendsOfTomorrow && ep.Season.Number == 6 {
+					now := time.Now()
+					ep.Airdate = time.Date(now.Year(), time.January, 1, 0, 0, 0, 0, time.UTC)
+				}
 
 				arrowverseInfoEpisodes = append(arrowverseInfoEpisodes, ep)
 			})
@@ -228,10 +239,6 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 func fixScraped(input rune) rune {
 	if input == '—' {
 		return '0'
-	}
-
-	if input == '[' || input == ']' {
-		return -1
 	}
 
 	return input
