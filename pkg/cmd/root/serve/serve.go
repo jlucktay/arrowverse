@@ -31,19 +31,17 @@ import (
 
 func NewCmd() *cobra.Command {
 	serveCmd := &cobra.Command{
-		Use:   "serve",
-		Short: "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+		Use:     "serve",
+		Aliases: []string{"served", "server", "service", "svc"},
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Short: "Serve scraped data through a web front end",
+		Long: `Scrapes data from a wiki website to populate an in-memory collection and then
+renders and serves this data through a web front end.`,
 
 		Args: cobra.MaximumNArgs(0),
 
-		Run: func(_ *cobra.Command, _ []string) {
-			fmt.Println("serve called")
+		Run: func(cmd *cobra.Command, _ []string) {
+			fmt.Printf("%s called\n", cmd.CalledAs())
 		},
 	}
 
