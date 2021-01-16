@@ -26,27 +26,46 @@ package api
 import (
 	"fmt"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/cobra"
 )
 
+// Options is a struct to support the 'api' subcommand.
+type Options struct {
+	Port uint16
+}
+
+// NewOptions returns initialised Options with defaults set.
+func NewOptions() *Options {
+	return &Options{Port: 3000}
+}
+
 // NewCmd encapsulates the 'api' subcommand.
 func NewCmd() *cobra.Command {
+	o := NewOptions()
+
 	apiCmd := &cobra.Command{
 		Use:   "api",
-		Short: "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Short: "Run up a headless web API serving scraped data",
+		Long: `Scrapes data from a wiki website to populate an in-memory collection and then
+serves this data through a RESTful web API.`,
 
 		Args: cobra.MaximumNArgs(0),
 
-		Run: func(_ *cobra.Command, _ []string) {
-			fmt.Println("api called")
+		RunE: func(_ *cobra.Command, _ []string) error {
+			app := fiber.New()
+
+			app.Get("/", func(c *fiber.Ctx) error {
+				return c.SendString("Hello, World 👋!")
+			})
+
+			listenAddr := fmt.Sprintf(":%d", o.Port)
+
+			return app.Listen(listenAddr)
 		},
 	}
+
+	apiCmd.Flags().Uint16VarP(&o.Port, "port", "p", o.Port, "port to listen on")
 
 	return apiCmd
 }
