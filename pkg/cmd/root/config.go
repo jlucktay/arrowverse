@@ -100,14 +100,16 @@ func checkConfig(cmd *cobra.Command, _ []string) error {
 	vas := viper.AllSettings()
 
 	if len(vas) == 0 {
-		return ErrNoConfValues
+		return cmd.Help()
 	}
 
-	fmt.Fprintln(cmd.OutOrStdout(), "The following configuration values were established:")
+	fmt.Fprintln(cmd.OutOrStdout(), "The following configuration value(s) were established:")
 
 	for k, v := range viper.AllSettings() {
-		fmt.Fprintf(cmd.OutOrStdout(), "key: '%s', value (of type %[2]T): %#[2]v\n", k, v)
+		fmt.Fprintf(cmd.OutOrStdout(), "key: '%s', value (of type %[2]T): %+[2]v\n", k, v)
 	}
 
-	return nil
+	fmt.Fprintln(cmd.OutOrStdout(), " ---")
+
+	return cmd.Help()
 }

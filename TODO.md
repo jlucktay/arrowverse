@@ -25,6 +25,8 @@
         // viper.SetDefault("storage_type", "in-memory")
         ```
 
+  - move config checking (currently under the root command) into its own subcommand
+
 ### API endpoints
 
 - when serving shows, use `strings.Map()` to turn e.g. 'The Flash (The CW)' into 'theflashthecw'
