@@ -30,7 +30,7 @@ COPY go.mod go.sum ./
 #   go get -v "${pb/@/\/...@}"; fi
 
 # Download and precompile all third party libraries (protobuf will be dealt with indirectly)
-RUN go mod graph | awk '{if ($1 !~ "@" && $2 !~ "^google.golang.org/protobuf@") print $2}' | xargs go get -v
+RUN go mod graph | awk '$1 !~ "@" && $2 !~ "^google.golang.org/protobuf@" { print $2 }' | xargs go get -v
 
 # Add the sources
 COPY . .
