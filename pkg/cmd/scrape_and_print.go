@@ -33,6 +33,7 @@ import (
 	"go.jlucktay.dev/arrowverse/pkg/scrape"
 )
 
+// ScrapeAndPrint does what it says on the tin.
 func ScrapeAndPrint(cmd *cobra.Command, _ []string) error {
 	episodeLists, errEL := scrape.EpisodeLists()
 	if errEL != nil {

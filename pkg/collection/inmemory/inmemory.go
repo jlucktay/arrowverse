@@ -29,6 +29,7 @@ import (
 	"go.jlucktay.dev/arrowverse/pkg/models"
 )
 
+// Collection is an in-memory implementation of a Show collection.
 type Collection struct {
 	Shows []models.Show
 }
@@ -88,7 +89,7 @@ func (c *Collection) AddEpisode(show models.ShowName, season int, episode *model
 }
 
 // InOrder will return episodes (limited to the given show(s) if any) in airdate order.
-func (c *Collection) InOrder(shows ...models.ShowName) ([]models.Episode, error) {
+func (c *Collection) InOrder(shows ...models.ShowName) ([]models.Episode, error) { //nolint:unparam // See below.
 	ret := []models.Episode{}
 
 	for i := range c.Shows {
@@ -119,18 +120,18 @@ func (c *Collection) InOrder(shows ...models.ShowName) ([]models.Episode, error)
 }
 
 // Count returns the number of shows in the collection.
-func (c *Collection) Count() (int, error) {
+func (c *Collection) Count() (int, error) { //nolint:unparam // The in-memory implementation is much simpler.
 	return len(c.Shows), nil
 }
 
 // Get returns the given show from the collection.
 func (c *Collection) Get(show string) (*models.Show, error) {
-	panic("not implemented") // TODO: Implement.
+	panic("not implemented")
 }
 
 // GetAll returns all shows in the collection.
 func (c *Collection) GetAll() ([]*models.Show, error) {
-	panic("not implemented") // TODO: Implement.
+	panic("not implemented")
 }
 
 // SeasonCount returns the number of seasons for the given show in the collection.
@@ -146,30 +147,30 @@ func (c *Collection) SeasonCount(show models.ShowName) (int, error) {
 
 // GetSeason returns the whole season for the given show in the collection.
 func (c *Collection) GetSeason(show string, season int) (*models.Season, error) {
-	panic("not implemented") // TODO: Implement.
+	panic("not implemented")
 }
 
 // GetAllSeasons returns all seasons in the collection for the given show.
 func (c *Collection) GetAllSeasons(show string) ([]*models.Season, error) {
-	panic("not implemented") // TODO: Implement.
+	panic("not implemented")
 }
 
 // EpisodeCount returns the number of episodes in the given show's season in the collection.
 func (c *Collection) EpisodeCount(show string, season int) (int, error) {
-	panic("not implemented") // TODO: Implement.
+	panic("not implemented")
 }
 
 // GetEpisode returns the specific episode from the given show's season in the collection.
 func (c *Collection) GetEpisode(show string, season, episode int) (*models.Episode, error) {
-	panic("not implemented") // TODO: Implement.
+	panic("not implemented")
 }
 
 // GetAllSeasonEpisodes returns all episode from the given show's season in the collection.
 func (c *Collection) GetAllSeasonEpisodes(show string, season int) ([]*models.Episode, error) {
-	panic("not implemented") // TODO: Implement.
+	panic("not implemented")
 }
 
 // GetAllEpisodes returns all episodes from all seasons for the given show in the collection.
 func (c *Collection) GetAllEpisodes(show string) ([]*models.Episode, error) {
-	panic("not implemented") // TODO: Implement.
+	panic("not implemented")
 }

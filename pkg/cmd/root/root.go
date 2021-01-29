@@ -35,6 +35,7 @@ import (
 
 var cfgFile string
 
+// NewCmd returns the 'root' command.
 func NewCmd() *cobra.Command {
 	// cmd represents the base command when called without any subcommands.
 	cmd := &cobra.Command{

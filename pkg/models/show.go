@@ -27,8 +27,10 @@ import (
 	"strings"
 )
 
+// ShowName is a custom string type for use with these models.
 type ShowName string
 
+// These are the names of the shows that this app wrangles.
 const (
 	Arrow                 ShowName = "Arrow"
 	Batwoman              ShowName = "Batwoman"
@@ -44,6 +46,7 @@ const (
 	TheFlashCBS ShowName = "The Flash (CBS)"
 )
 
+// ValidShowName will assert whether or not the given string is a valid Show name.
 func ValidShowName(s string) bool {
 	validShowNames := []ShowName{
 		Arrow,

@@ -27,6 +27,7 @@ import (
 	"go.jlucktay.dev/arrowverse/pkg/models"
 )
 
+// Shows is a collection of shows, seasons, and episodes.
 type Shows interface {
 	// Add a show to the collection.
 	Add(*models.Show) error

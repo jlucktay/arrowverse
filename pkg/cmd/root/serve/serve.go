@@ -29,6 +29,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// NewCmd returns the 'serve' subcommand.
 func NewCmd() *cobra.Command {
 	serveCmd := &cobra.Command{
 		Use:     "serve",
