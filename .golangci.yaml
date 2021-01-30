@@ -5,6 +5,7 @@ issues:
     - ^should have a package comment, unless it's in another file for this package$
   max-issues-per-linter: 0
   max-same-issues: 0
+  new-from-rev: main
 
 linters-settings:
   dogsled:
@@ -87,6 +88,7 @@ linters:
   enable:
     - asciicheck
     - bodyclose
+    - deadcode
     - dogsled
     - dupl
     - errcheck
@@ -101,7 +103,9 @@ linters:
     - gofumpt
     - golint
     - gosec
+    - gosimple
     - govet
+    - ineffassign
     - lll
     - maligned
     - nakedret
@@ -110,14 +114,17 @@ linters:
     - noctx
     - nolintlint
     - staticcheck
+    - structcheck
     - stylecheck
+    - typecheck
     - unconvert
     - unparam
+    - unused
+    - varcheck
     - whitespace
     - wrapcheck
     - wsl
 
-# output configuration options
 output:
   format: tab
   print-issued-lines: true
