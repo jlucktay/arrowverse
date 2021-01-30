@@ -139,7 +139,7 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 					Number: seasonNumber,
 				}
 
-				// Workaround for Black Lightning pedantry
+				// Workaround for Black Lightning pedantry - vvv
 				if ep.Season.Show.Name == models.BlackLightning && ep.Season.Number == 3 &&
 					((ep.EpisodeSeason >= 2 && ep.EpisodeSeason <= 7) || (ep.EpisodeSeason >= 11 && ep.EpisodeSeason <= 13) ||
 						ep.EpisodeSeason == 15) && strings.HasPrefix(ep.Name, "The Book of ") {
@@ -149,12 +149,16 @@ func TestConsistencyWithArrowverseDotInfo(t *testing.T) {
 						ep.Name = ep.Name[0:lastColon]
 					}
 				}
-				// Workaround for Black Lightning pedantry
+
+				if ep.Season.Show.Name == models.BlackLightning && ep.Season.Number == 2 && ep.EpisodeSeason == 9 {
+					ep.Name = strings.ReplaceAll(ep.Name, "Gift of the Magi", "Gift of Magi")
+				}
+				// Workaround for Black Lightning pedantry - ^^^
 
 				// Special case for Legends S06E01
 				if ep.Season.Show.Name == models.DCsLegendsOfTomorrow && ep.Season.Number == 6 {
 					now := time.Now()
-					ep.Airdate = time.Date(now.Year(), time.January, 1, 0, 0, 0, 0, time.UTC)
+					ep.Airdate = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 				}
 
 				arrowverseInfoEpisodes = append(arrowverseInfoEpisodes, ep)
