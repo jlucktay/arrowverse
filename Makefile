@@ -22,20 +22,21 @@ endif
 image_repository := "jlucktay/arrowverse"
 golangci_lint_version := v1.35.2
 
-all: test-all lint build
+all: test-cover lint build
 test: tmp/.short-tests-passed.sentinel
 test-all: tmp/.all-tests-passed.sentinel
+test-cover: tmp/.cover-tests-passed.sentinel
 lint: tmp/.linted.sentinel
 build: out/image-id
-.PHONY: all test test-all lint build
+.PHONY: all test test-all test-cover lint build
 
 bench: tmp/.benchmarks-ran.sentinel
 .PHONY: bench
 
 # Clean up the output directories; all the sentinel files go under `tmp`, so this will cause everything to get rebuilt.
 clean:
-> rm -rf ./tmp
-> rm -rf ./out
+> rm -f ./arrowverse ./cover.out
+> rm -rf ./hack/bin ./tmp ./out
 .PHONY: clean
 
 # Clean up any built Docker images.
@@ -55,6 +56,11 @@ tmp/.short-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 tmp/.all-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
 > go test ./...
+> touch $@
+
+tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
+> mkdir -p $(@D)
+> go test -count=1 -covermode atomic -coverprofile cover.out -race ./...
 > touch $@
 
 # Lint - re-run if the tests have been re-run (and so, by proxy, whenever the source files have changed).
