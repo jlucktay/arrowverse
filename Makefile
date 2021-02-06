@@ -58,7 +58,7 @@ tmp/.all-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 # Lint - re-run if the tests have been re-run (and so, by proxy, whenever the source files have changed).
 tmp/.linted.sentinel: Dockerfile .golangci.yaml tmp/.short-tests-passed.sentinel
 > mkdir -p $(@D)
-> hadolint Dockerfile
+> docker run --interactive --rm hadolint/hadolint < Dockerfile
 > find . -type f -iname "*.go" -exec gofmt -s -w "{}" +
 > go vet ./...
 > golangci-lint run
