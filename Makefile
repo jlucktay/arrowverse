@@ -22,11 +22,12 @@ endif
 image_repository := "jlucktay/arrowverse"
 golangci_lint_version := v1.35.2
 
+all: test-all lint build
 test: tmp/.short-tests-passed.sentinel
 test-all: tmp/.all-tests-passed.sentinel
 lint: tmp/.linted.sentinel
 build: out/image-id
-.PHONY: test test-all lint build
+.PHONY: all test test-all lint build
 
 bench: tmp/.benchmarks-ran.sentinel
 .PHONY: bench
@@ -72,7 +73,7 @@ hack/bin/golangci-lint:
 # Docker image - re-build if the lint output is re-run.
 out/image-id: Dockerfile tmp/.linted.sentinel
 > mkdir -p $(@D)
-> image_id="$(image_repository):$$(uuidgen)"
+> image_id="$(image_repository):$(shell uuidgen)"
 > DOCKER_BUILDKIT=1 docker build --tag="$${image_id}" .
 > echo "$${image_id}" > out/image-id
 
