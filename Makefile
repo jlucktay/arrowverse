@@ -20,12 +20,14 @@ endif
 .RECIPEPREFIX = >
 
 image_repository := "jlucktay/arrowverse"
+golangci_lint_version := v1.35.2
 
+all: test-all lint build
 test: tmp/.short-tests-passed.sentinel
 test-all: tmp/.all-tests-passed.sentinel
 lint: tmp/.linted.sentinel
 build: out/image-id
-.PHONY: test test-all lint build
+.PHONY: all test test-all lint build
 
 bench: tmp/.benchmarks-ran.sentinel
 .PHONY: bench
@@ -56,18 +58,22 @@ tmp/.all-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > touch $@
 
 # Lint - re-run if the tests have been re-run (and so, by proxy, whenever the source files have changed).
-tmp/.linted.sentinel: Dockerfile .golangci.yaml tmp/.short-tests-passed.sentinel
+tmp/.linted.sentinel: Dockerfile .golangci.yaml hack/bin/golangci-lint tmp/.short-tests-passed.sentinel
 > mkdir -p $(@D)
-> hadolint Dockerfile
+> docker run --interactive --rm hadolint/hadolint < Dockerfile
 > find . -type f -iname "*.go" -exec gofmt -s -w "{}" +
 > go vet ./...
-> golangci-lint run
+> hack/bin/golangci-lint run
 > touch $@
+
+hack/bin/golangci-lint:
+> curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
+> | sh -s -- -b $(shell pwd)/hack/bin $(golangci_lint_version)
 
 # Docker image - re-build if the lint output is re-run.
 out/image-id: Dockerfile tmp/.linted.sentinel
 > mkdir -p $(@D)
-> image_id="$(image_repository):$$(uuidgen)"
+> image_id="$(image_repository):$(shell uuidgen)"
 > DOCKER_BUILDKIT=1 docker build --tag="$${image_id}" .
 > echo "$${image_id}" > out/image-id
 

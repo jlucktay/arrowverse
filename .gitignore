@@ -28,5 +28,6 @@ vendor/
 arrowverse
 
 # Makefile things
+/hack/bin/
 /out/
 /tmp/
