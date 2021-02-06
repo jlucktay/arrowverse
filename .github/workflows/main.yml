@@ -33,17 +33,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run 'git graph' to help troubleshoot
-        run: >
-          git log
-          --graph
-          -25
-          --branches
-          --remotes
-          --tags
-          --format=format:'%Cgreen%h %Creset• %<(75,trunc)%s (%aN, %ar) %Cred%d'
-          --author-date-order
-
       - name: Setup go
         uses: actions/setup-go@v2
         with:
