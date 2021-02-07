@@ -17,7 +17,7 @@ ENV GO111MODULE=on
 
 # Precompile the entire Go standard library into a Docker cache layer: useful for other projects too!
 # cf. https://www.reddit.com/r/golang/comments/hj4n44/improved_docker_go_module_dependency_cache_for/
-RUN go install -v std
+RUN go install -ldflags="-buildid= -w" -trimpath -v std
 
 WORKDIR /go/src/go.jlucktay.dev/arrowverse
 
@@ -30,14 +30,15 @@ COPY go.mod go.sum ./
 #   go get -v "${pb/@/\/...@}"; fi
 
 # Download and precompile all third party libraries (protobuf will be dealt with indirectly)
-RUN go mod graph | awk '$1 !~ "@" && $2 !~ "^google.golang.org/protobuf@" { print $2 }' | xargs go get -v
+RUN go mod graph | awk '$1 !~ "@" && $2 !~ "^google.golang.org/protobuf@" { print $2 }' \
+  | xargs go get -ldflags="-buildid= -w" -trimpath -v
 
 # Add the sources
 COPY . .
 
 # Compile! Should only compile our project since everything else has been precompiled by now, and future
 # (re)compilations will leverage the same cached layer(s)
-RUN go build -v -o /bin/arrowverse
+RUN go build -ldflags="-buildid= -w" -trimpath -v -o /bin/arrowverse
 
 FROM scratch AS runner
 

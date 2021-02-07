@@ -101,7 +101,7 @@ out/image-id: Dockerfile tmp/.linted.sentinel
 > echo "$${image_id}" > out/image-id
 
 $(binary_name): tmp/.linted.sentinel
-> go build -v
+> go build -ldflags="-buildid= -w" -trimpath -v
 
 tmp/.benchmarks-ran.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
