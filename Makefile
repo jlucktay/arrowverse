@@ -1,10 +1,11 @@
 # Inspiration:
 # - https://devhints.io/makefile
 # - https://tech.davis-hansson.com/p/make/
+# - https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 
 SHELL := bash
 
-# Default - top level rule is what gets run when you run just `make` without specifying a goal/target.
+# Default - top level rule is what gets run when you run just 'make' without specifying a goal/target.
 .DEFAULT_GOAL := build
 
 .DELETE_ON_ERROR:
@@ -19,46 +20,47 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-image_repository := "jlucktay/arrowverse"
-golangci_lint_version := v1.35.2
+binary_name ?= $(shell basename $(CURDIR))
+image_repository ?= "jlucktay/$(binary_name)"
+golangci_lint_version ?= v1.35.2
 
-all: test-cover lint build
-test: tmp/.short-tests-passed.sentinel
-test-all: tmp/.all-tests-passed.sentinel
-test-consistency: tmp/.consistency-tests-passed.sentinel
-test-cover: tmp/.cover-tests-passed.sentinel
-lint: tmp/.linted.sentinel
-build: out/image-id
-.PHONY: all test test-all test-consistency test-cover lint build
+help:
+> @grep -E '^[a-zA-Z_-]+:.*? ## .*$$' $(MAKEFILE_LIST) | sort \
+> | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+.PHONY: help
 
-bench: tmp/.benchmarks-ran.sentinel
+all: test-cover lint build ## Run the 'test-cover', 'lint', and 'build' targets.
+test: tmp/.short-tests-passed.sentinel ## Run short tests.
+test-all: tmp/.all-tests-passed.sentinel ## Run all tests.
+test-consistency: tmp/.consistency-tests-passed.sentinel ## Run the consistency test.
+test-cover: tmp/.cover-tests-passed.sentinel ## Run all tests with the race detector and output a coverage profile.
+lint: tmp/.linted.sentinel ## Lint the Dockerfile and all of the Go code.
+build: out/image-id ## [DEFAULT] Run short tests, lint, and build the Docker image.
+build-binary: $(binary_name) ## Build a bare binary only, without a Docker image wrapped around it.
+.PHONY: all test test-all test-consistency test-cover lint build build-binary
+
+bench: tmp/.benchmarks-ran.sentinel ## Run enough iterations of each benchmark to take ten seconds each.
 .PHONY: bench
 
-# Clean up binaries, test coverage, and the output directories.
-# All the sentinel files go under `tmp`, so this will cause everything to get rebuilt.
-clean:
-> rm -f ./arrowverse ./cover.out
-> rm -rf ./tmp ./out
+clean: ## Clean up the built binary, test coverage, and the temp and output sub-directories. This will cause everything to get rebuilt.
+> go clean -x -v
+> rm -rfv ./cover.out ./tmp ./out
 .PHONY: clean
 
-# Clean up any built Docker images.
-clean-docker:
+clean-docker: ## Clean up built Docker images.
 > docker images \
   --filter=reference=$(image_repository) \
   --no-trunc --quiet | sort -f | uniq | xargs -n 1 docker rmi --force
 > rm -f ./out/image-id
 .PHONY: clean-docker
 
-# Clean up any binaries under `hack`.
-clean-hack:
+clean-hack: ## Clean up binaries under 'hack'.
 > rm -rf ./hack/bin
 .PHONY: clean-hack
 
-# Clean all of the things.
-clean-all: clean clean-docker clean-hack
+clean-all: clean clean-docker clean-hack ## Clean all of the things.
 .PHONY: clean-all
 
-# Tests - re-run short/all tests if any Go files have changed since the relevant sentinel file was last touched.
 tmp/.short-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
 > go test -short ./...
@@ -79,7 +81,6 @@ tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > go test -count=1 -covermode=atomic -coverprofile=cover.out -race ./...
 > touch $@
 
-# Lint - re-run if the tests have been re-run (and so, by proxy, whenever the source files have changed).
 tmp/.linted.sentinel: Dockerfile .golangci.yaml hack/bin/golangci-lint tmp/.short-tests-passed.sentinel
 > mkdir -p $(@D)
 > docker run --interactive --rm hadolint/hadolint < Dockerfile
@@ -99,8 +100,10 @@ out/image-id: Dockerfile tmp/.linted.sentinel
 > DOCKER_BUILDKIT=1 docker build --tag="$${image_id}" .
 > echo "$${image_id}" > out/image-id
 
-# Benchmarks - run enough iterations of each benchmark to take a few seconds (default is 1s)
+$(binary_name): tmp/.linted.sentinel
+> go build -v
+
 tmp/.benchmarks-ran.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
-> go test ./... -bench=. -benchmem -benchtime=3s -run=DoNotRunTests
+> go test ./... -bench=. -benchmem -benchtime=10s -run=DoNotRunTests
 > touch $@
