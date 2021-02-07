@@ -34,10 +34,11 @@ build: out/image-id
 bench: tmp/.benchmarks-ran.sentinel
 .PHONY: bench
 
-# Clean up the output directories; all the sentinel files go under `tmp`, so this will cause everything to get rebuilt.
+# Clean up binaries, test coverage, and the output directories.
+# All the sentinel files go under `tmp`, so this will cause everything to get rebuilt.
 clean:
 > rm -f ./arrowverse ./cover.out
-> rm -rf ./hack/bin ./tmp ./out
+> rm -rf ./tmp ./out
 .PHONY: clean
 
 # Clean up any built Docker images.
@@ -47,6 +48,15 @@ clean-docker:
   --no-trunc --quiet | sort -f | uniq | xargs -n 1 docker rmi --force
 > rm -f ./out/image-id
 .PHONY: clean-docker
+
+# Clean up any binaries under `hack`.
+clean-hack:
+> rm -rf ./hack/bin
+.PHONY: clean-hack
+
+# Clean all of the things.
+clean-all: clean clean-docker clean-hack
+.PHONY: clean-all
 
 # Tests - re-run short/all tests if any Go files have changed since the relevant sentinel file was last touched.
 tmp/.short-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
