@@ -1,3 +1,5 @@
+// +build test_consistency
+
 /*
 Copyright © 2021 James Lucktaylor <jlucktay@gmail.com>
 

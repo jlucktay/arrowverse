@@ -25,10 +25,11 @@ golangci_lint_version := v1.35.2
 all: test-cover lint build
 test: tmp/.short-tests-passed.sentinel
 test-all: tmp/.all-tests-passed.sentinel
+test-consistency: tmp/.consistency-tests-passed.sentinel
 test-cover: tmp/.cover-tests-passed.sentinel
 lint: tmp/.linted.sentinel
 build: out/image-id
-.PHONY: all test test-all test-cover lint build
+.PHONY: all test test-all test-consistency test-cover lint build
 
 bench: tmp/.benchmarks-ran.sentinel
 .PHONY: bench
@@ -56,6 +57,11 @@ tmp/.short-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 tmp/.all-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
 > go test ./...
+> touch $@
+
+tmp/.consistency-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
+> mkdir -p $(@D)
+> go test -tags=consistency ./...
 > touch $@
 
 tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
