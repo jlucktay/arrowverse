@@ -84,10 +84,15 @@ tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 tmp/.linted.sentinel: Dockerfile .golangci.yaml hack/bin/golangci-lint tmp/.short-tests-passed.sentinel
 > mkdir -p $(@D)
 > docker run --interactive --rm hadolint/hadolint < Dockerfile
-> find . -type f -iname "*.go" -exec gofmt -s -w "{}" +
+> find . -type f -iname "*.go" -exec gofmt -e -l -s "{}" + \
+> | awk '{ print } END { if (NR != 0) { print "gofmt found issues in the above file(s); please run \"make lint-simplify\" to remedy"; exit 1 } }'
 > go vet ./...
 > hack/bin/golangci-lint run
 > touch $@
+
+lint-simplify: ## Runs 'gofmt -s' to format and simplify all Go code.
+> find . -type f -iname "*.go" -exec gofmt -s -w "{}" +
+.PHONY: lint-simplify
 
 hack/bin/golangci-lint:
 > curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
