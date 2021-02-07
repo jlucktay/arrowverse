@@ -33,10 +33,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup go
+      - name: Set up Go ${{ matrix.go }}
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
+
+      - name: Set up module/build cache for Go
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          # In order:
+          # - module download cache
+          # - Linux build cache
+          # cf. https://github.com/mvdan/github-actions-golang/blob/master/.github/workflows/test.yml
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          restore-keys: |
+            ${{ runner.os }}-go-
 
       - run: make all
 
