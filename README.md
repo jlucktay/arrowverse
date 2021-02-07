@@ -1,5 +1,7 @@
 # Arrowverse episode watch order
 
+[![Coverage Status](https://coveralls.io/repos/github/jlucktay/arrowverse/badge.svg?branch=main)](https://coveralls.io/github/jlucktay/arrowverse?branch=main)
+
 ## Subcommand layout
 
 - `arrowverse`: prints usage

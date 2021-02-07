@@ -22,20 +22,23 @@ endif
 image_repository := "jlucktay/arrowverse"
 golangci_lint_version := v1.35.2
 
-all: test-all lint build
+all: test-cover lint build
 test: tmp/.short-tests-passed.sentinel
 test-all: tmp/.all-tests-passed.sentinel
+test-consistency: tmp/.consistency-tests-passed.sentinel
+test-cover: tmp/.cover-tests-passed.sentinel
 lint: tmp/.linted.sentinel
 build: out/image-id
-.PHONY: all test test-all lint build
+.PHONY: all test test-all test-consistency test-cover lint build
 
 bench: tmp/.benchmarks-ran.sentinel
 .PHONY: bench
 
-# Clean up the output directories; all the sentinel files go under `tmp`, so this will cause everything to get rebuilt.
+# Clean up binaries, test coverage, and the output directories.
+# All the sentinel files go under `tmp`, so this will cause everything to get rebuilt.
 clean:
-> rm -rf ./tmp
-> rm -rf ./out
+> rm -f ./arrowverse ./cover.out
+> rm -rf ./tmp ./out
 .PHONY: clean
 
 # Clean up any built Docker images.
@@ -46,6 +49,15 @@ clean-docker:
 > rm -f ./out/image-id
 .PHONY: clean-docker
 
+# Clean up any binaries under `hack`.
+clean-hack:
+> rm -rf ./hack/bin
+.PHONY: clean-hack
+
+# Clean all of the things.
+clean-all: clean clean-docker clean-hack
+.PHONY: clean-all
+
 # Tests - re-run short/all tests if any Go files have changed since the relevant sentinel file was last touched.
 tmp/.short-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
@@ -54,7 +66,17 @@ tmp/.short-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 
 tmp/.all-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
-> go test ./...
+> go test -count=1 -race ./...
+> touch $@
+
+tmp/.consistency-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
+> mkdir -p $(@D)
+> go test -tags=consistency ./...
+> touch $@
+
+tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
+> mkdir -p $(@D)
+> go test -count=1 -covermode=atomic -coverprofile=cover.out -race ./...
 > touch $@
 
 # Lint - re-run if the tests have been re-run (and so, by proxy, whenever the source files have changed).
