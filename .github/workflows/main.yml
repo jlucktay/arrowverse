@@ -40,8 +40,8 @@ jobs:
 
       - run: make all
 
-      - name: Coveralls
-        uses: coverallsapp/github-action@v1.1.2
+      - name: Send coverage to Coveralls
+        uses: shogo82148/actions-goveralls@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: cover.out
+          flag-name: Go ${{ matrix.go }}
+          path-to-profile: cover.out

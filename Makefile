@@ -66,7 +66,7 @@ tmp/.consistency-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 
 tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
-> go test -count=1 -covermode=count -coverprofile=cover.out ./...
+> go test -count=1 -covermode=atomic -coverprofile=cover.out -race ./...
 > touch $@
 
 # Lint - re-run if the tests have been re-run (and so, by proxy, whenever the source files have changed).
