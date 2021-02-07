@@ -56,3 +56,7 @@
   - <https://github.com/actions/starter-workflows/blob/main/ci/docker-image.yml>
   - <https://github.com/actions/starter-workflows/blob/main/ci/docker-publish.yml>
     - further reading: <https://docs.github.com/en/free-pro-team@latest/packages/guides/configuring-docker-for-use-with-github-packages>
+
+## CI pipeline
+
+- [cache Docker builds on GitHub Actions](https://dev.to/dtinth/caching-docker-builds-in-github-actions-which-approach-is-the-fastest-a-research-18ei)

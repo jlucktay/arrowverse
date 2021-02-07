@@ -54,8 +54,8 @@ func initConfig(cmd *cobra.Command, _ []string) error {
 			return fmt.Errorf("could not get home directory: %w", errHomeDir)
 		}
 
-		// Expect config file name to be "arrowverse.<something>".
-		viper.SetConfigName(cfgName)
+		// Expect a specific config file name.
+		viper.SetConfigName(cfgName + "." + cfgType)
 
 		// Search for a config file in the following order of preference (most preferred first):
 		// - the current working directory
