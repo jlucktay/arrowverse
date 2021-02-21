@@ -3,10 +3,10 @@ FROM golang:1.15 AS builder
 # Set some shell options for using pipes and such
 SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
 
-# Install common CA certificates to blag later
+# Install/update the common CA certificates package now, and blag it later
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates=20200601~deb10u1 \
-  && apt-get autoremove -y \
+  && apt-get install --assume-yes --no-install-recommends ca-certificates \
+  && apt-get autoremove --assume-yes \
   && rm -rf /root/.cache
 
 # Don't call any C code (the 'scratch' base image used later won't have any libraries to reference)
