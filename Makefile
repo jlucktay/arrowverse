@@ -82,9 +82,11 @@ tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 
 tmp/.linted.sentinel: Dockerfile .golangci.yaml hack/bin/golangci-lint tmp/.short-tests-passed.sentinel
 > mkdir -p $(@D)
-> docker run --interactive --rm hadolint/hadolint < Dockerfile
+> docker run --env XDG_CONFIG_HOME=/etc --interactive --rm \
+> --volume "$(shell pwd)/.hadolint.yaml:/etc/hadolint.yaml:ro" hadolint/hadolint < Dockerfile
 > find . -type f -iname "*.go" -exec gofmt -e -l -s "{}" + \
-> | awk '{ print } END { if (NR != 0) { print "gofmt found issues in the above file(s); please run \"make lint-simplify\" to remedy"; exit 1 } }'
+> | awk '{ print } END { if (NR != 0) { print "gofmt found issues in the above file(s); \
+please run \"make lint-simplify\" to remedy"; exit 1 } }'
 > go vet ./...
 > hack/bin/golangci-lint run
 > touch $@
