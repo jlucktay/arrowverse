@@ -73,7 +73,8 @@ tmp/.all-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 
 tmp/.consistency-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
-> go test -tags=consistency ./...
+> go test go.jlucktay.dev/arrowverse/pkg/collection/inmemory -count=1 \
+> -run="^TestConsistencyWithArrowverseDotInfo$$" -tags=test_consistency -v
 > touch $@
 
 tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
