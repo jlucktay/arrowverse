@@ -21,8 +21,7 @@ endif
 .RECIPEPREFIX = >
 
 binary_name ?= $(shell basename $(CURDIR))
-image_repository ?= "jlucktay/$(binary_name)"
-golangci_lint_version ?= v1.35.2
+image_repository ?= jlucktay/$(binary_name)
 
 help:
 > @grep -E '^[a-zA-Z_-]+:.*? ## .*$$' $(MAKEFILE_LIST) | sort \
@@ -96,7 +95,7 @@ lint-simplify: ## Runs 'gofmt -s' to format and simplify all Go code.
 
 hack/bin/golangci-lint:
 > curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
-> | sh -s -- -b $(shell pwd)/hack/bin $(golangci_lint_version)
+> | sh -s -- -b $(shell pwd)/hack/bin
 
 # Docker image - re-build if the lint output is re-run.
 out/image-id: Dockerfile tmp/.linted.sentinel
