@@ -23,8 +23,9 @@ endif
 binary_name ?= $(shell basename $(CURDIR))
 image_repository ?= jlucktay/$(binary_name)
 
+# Adjust the width of the first column by changing the '-20s' value in the printf pattern.
 help:
-> @grep -E '^[a-zA-Z_-]+:.*? ## .*$$' $(MAKEFILE_LIST) | sort \
+> @grep -E '^[a-zA-Z0-9_-]+:.*? ## .*$$' $(MAKEFILE_LIST) | sort \
 > | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 .PHONY: help
 
@@ -33,33 +34,32 @@ test: tmp/.short-tests-passed.sentinel ## Run short tests.
 test-all: tmp/.all-tests-passed.sentinel ## Run all tests.
 test-consistency: tmp/.consistency-tests-passed.sentinel ## Run the consistency test.
 test-cover: tmp/.cover-tests-passed.sentinel ## Run all tests with the race detector and output a coverage profile.
-lint: tmp/.linted.sentinel ## Lint the Dockerfile and all of the Go code.
+bench: tmp/.benchmarks-ran.sentinel ## Run enough iterations of each benchmark to take ten seconds each.
+lint: tmp/.linted.sentinel ## Lint the Dockerfile and all of the Go code. Will also test.
 build: out/image-id ## [DEFAULT] Run short tests, lint, and build the Docker image.
 build-binary: $(binary_name) ## Build a bare binary only, without a Docker image wrapped around it.
-.PHONY: all test test-all test-consistency test-cover lint build build-binary
+.PHONY: all test test-all test-consistency test-cover bench lint build build-binary
 
-bench: tmp/.benchmarks-ran.sentinel ## Run enough iterations of each benchmark to take ten seconds each.
-.PHONY: bench
-
-clean: ## Clean up the built binary, test coverage, and the temp and output sub-directories. This will cause everything to get rebuilt.
+clean: ## Clean up the built binary, test coverage, and the temp and output sub-directories.
 > go clean -x -v
-> rm -rfv ./cover.out ./tmp ./out
+> rm -rf cover.out tmp out
 .PHONY: clean
 
-clean-docker: ## Clean up built Docker images.
+clean-docker: ## Clean up any built Docker images.
 > docker images \
   --filter=reference=$(image_repository) \
   --no-trunc --quiet | sort -f | uniq | xargs -n 1 docker rmi --force
-> rm -f ./out/image-id
+> rm -f out/image-id
 .PHONY: clean-docker
 
 clean-hack: ## Clean up binaries under 'hack'.
-> rm -rf ./hack/bin
+> rm -rf hack/bin
 .PHONY: clean-hack
 
 clean-all: clean clean-docker clean-hack ## Clean all of the things.
 .PHONY: clean-all
 
+# Tests - re-run if any Go files have changes since tmp/.*tests-passed.sentinel was last touched.
 tmp/.short-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
 > go test -short ./...
@@ -81,7 +81,13 @@ tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > go test -count=1 -covermode=atomic -coverprofile=cover.out -race ./...
 > touch $@
 
-tmp/.linted.sentinel: Dockerfile .golangci.yaml hack/bin/golangci-lint tmp/.short-tests-passed.sentinel
+tmp/.benchmarks-ran.sentinel: $(shell find . -type f -iname "*.go")
+> mkdir -p $(@D)
+> go test ./... -bench=. -benchmem -benchtime=10s -run=DoNotRunTests
+> touch $@
+
+# Lint - re-run if the tests have been re-run (and so, by proxy, whenever the source files have changed).
+tmp/.linted.sentinel: Dockerfile .golangci.yaml .hadolint.yaml hack/bin/golangci-lint tmp/.short-tests-passed.sentinel
 > mkdir -p $(@D)
 > docker run --env XDG_CONFIG_HOME=/etc --interactive --rm \
 > --volume "$(shell pwd)/.hadolint.yaml:/etc/hadolint.yaml:ro" hadolint/hadolint < Dockerfile
@@ -109,8 +115,3 @@ out/image-id: Dockerfile tmp/.linted.sentinel
 
 $(binary_name): tmp/.linted.sentinel
 > go build -ldflags="-buildid= -w" -trimpath -v
-
-tmp/.benchmarks-ran.sentinel: $(shell find . -type f -iname "*.go")
-> mkdir -p $(@D)
-> go test ./... -bench=. -benchmem -benchtime=10s -run=DoNotRunTests
-> touch $@
