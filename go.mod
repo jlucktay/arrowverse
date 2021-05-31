@@ -11,7 +11,7 @@ require (
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/gofiber/fiber/v2 v2.5.0
 	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/google/go-cmp v0.5.5
+	github.com/google/go-cmp v0.5.6
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/matryer/is v1.4.0
 	github.com/mitchellh/go-homedir v1.1.0
