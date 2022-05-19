@@ -1,3 +1,4 @@
+//go:build test_consistency
 // +build test_consistency
 
 /*

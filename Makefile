@@ -73,7 +73,7 @@ tmp/.all-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 tmp/.consistency-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
 > mkdir -p $(@D)
 > go test go.jlucktay.dev/arrowverse/pkg/collection/inmemory -count=1 \
-> -run="^TestConsistencyWithArrowverseDotInfo$$" -tags=test_consistency -v
+  -run="^TestConsistencyWithArrowverseDotInfo$$" -tags=test_consistency -v
 > touch $@
 
 tmp/.cover-tests-passed.sentinel: $(shell find . -type f -iname "*.go")
@@ -89,11 +89,11 @@ tmp/.benchmarks-ran.sentinel: $(shell find . -type f -iname "*.go")
 # Lint - re-run if the tests have been re-run (and so, by proxy, whenever the source files have changed).
 tmp/.linted.sentinel: Dockerfile .golangci.yaml .hadolint.yaml hack/bin/golangci-lint tmp/.short-tests-passed.sentinel
 > mkdir -p $(@D)
-> docker run --env XDG_CONFIG_HOME=/etc --interactive --rm \
-> --volume "$(shell pwd)/.hadolint.yaml:/etc/hadolint.yaml:ro" hadolint/hadolint < Dockerfile
+> docker run --env XDG_CONFIG_HOME=/etc --interactive --pull=always --rm \
+  --volume "$(shell pwd)/.hadolint.yaml:/etc/hadolint.yaml:ro" hadolint/hadolint < Dockerfile
 > find . -type f -iname "*.go" -exec gofmt -e -l -s "{}" + \
-> | awk '{ print } END { if (NR != 0) { print "gofmt found issues in the above file(s); \
-please run \"make lint-simplify\" to remedy"; exit 1 } }'
+  | awk '{ print } END { if (NR != 0) { print "gofmt found issues in the above file(s); \
+  please run \"make lint-simplify\" to remedy"; exit 1 } }'
 > go vet ./...
 > hack/bin/golangci-lint run
 > touch $@
@@ -104,7 +104,7 @@ lint-simplify: ## Runs 'gofmt -s' to format and simplify all Go code.
 
 hack/bin/golangci-lint:
 > curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
-> | sh -s -- -b $(shell pwd)/hack/bin
+  | sh -s -- -b $(shell pwd)/hack/bin
 
 # Docker image - re-build if the lint output is re-run.
 out/image-id: Dockerfile tmp/.linted.sentinel

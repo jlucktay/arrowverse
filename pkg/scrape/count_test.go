@@ -44,13 +44,13 @@ func TestEpisodeNumbers(t *testing.T) {
 	// Store show/season/episode details for seasons that have finished airing completely.
 	showSeasonEpisodes := map[models.ShowName]map[int]int{
 		models.Arrow:                 {1: 23, 2: 23, 3: 23, 4: 23, 5: 23, 6: 23, 7: 22, 8: 10},
-		models.Batwoman:              {1: 20, 2: 18},
+		models.Batwoman:              {1: 20, 2: 18, 3: 13},
 		models.BirdsOfPrey:           {1: 13},
 		models.BlackLightning:        {1: 13, 2: 16, 3: 16, 4: 13},
 		models.Constantine:           {1: 13},
-		models.DCsLegendsOfTomorrow:  {1: 16, 2: 17, 3: 18, 4: 16, 5: 15},
+		models.DCsLegendsOfTomorrow:  {1: 16, 2: 17, 3: 18, 4: 16, 5: 15, 6: 15, 7: 13},
 		models.FreedomFightersTheRay: {1: 6, 2: 6},
-		models.Supergirl:             {1: 20, 2: 22, 3: 23, 4: 22, 5: 19},
+		models.Supergirl:             {1: 20, 2: 22, 3: 23, 4: 22, 5: 19, 6: 20},
 		models.TheFlashCBS:           {1: 22},
 		models.TheFlashTheCW:         {1: 23, 2: 23, 3: 23, 4: 23, 5: 22, 6: 19, 7: 18},
 		models.Vixen:                 {1: 6, 2: 6},
