@@ -9,7 +9,7 @@ require (
 	github.com/google/go-cmp v0.5.5
 	github.com/matryer/is v1.4.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/spf13/cobra v1.1.3
+	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.7.1
 	go.uber.org/zap v1.16.0
 )
@@ -26,7 +26,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/klauspost/compress v1.15.4 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
