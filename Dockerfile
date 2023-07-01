@@ -1,6 +1,7 @@
-FROM golang:1.17 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.20 AS builder
+ARG TARGETOS TARGETARCH
 
-# Set some shell options for using pipes and such
+# Set some shell options for using pipes and such.
 SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
 
 # Install/update the common CA certificates package now, and blag it later
@@ -9,38 +10,27 @@ RUN apt-get update \
   && apt-get autoremove --assume-yes \
   && rm -rf /root/.cache
 
-# Don't call any C code (the 'scratch' base image used later won't have any libraries to reference)
-ENV CGO_ENABLED=0
-
-# Use Go modules
-ENV GO111MODULE=on
-
-# Precompile the entire Go standard library into a Docker cache layer: useful for other projects too!
-# cf. https://www.reddit.com/r/golang/comments/hj4n44/improved_docker_go_module_dependency_cache_for/
-RUN go install -ldflags="-buildid= -w" -trimpath -v std
-
+# Copy necessary 'go.mod' and 'go.sum' files for separate Go module downloads.
 WORKDIR /go/src/go.jlucktay.dev/arrowverse
+COPY go.* .
 
-# This will save Go dependencies in the Docker cache, until/unless they change
-COPY go.mod go.sum ./
+# Download Go modules in a separate step before adding the source code, to prevent invalidation of cached Go modules if
+# only our source code is changed and not any dependencies.
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
+  GOOS=$TARGETOS GOARCH=$TARGETARCH go mod download
 
-# May or may not need this special handling to deal with the protocol buffer dependency
-# cf. https://github.com/golang/protobuf/issues/751
-# RUN if pb=$(go mod graph | awk '{if ($1 !~ "@") print $2}' | grep "google.golang.org/protobuf"); then \
-#   go get -v "${pb/@/\/...@}"; fi
-
-# Download and precompile all third party libraries (protobuf will be dealt with indirectly)
-RUN go mod graph | awk '$1 !~ "@" && $2 !~ "^google.golang.org/protobuf@" { print $2 }' \
-  | xargs go get -ldflags="-buildid= -w" -trimpath -v
-
-# Add the sources
+# Copy in all of the source code.
 COPY . .
 
-# Compile! Should only compile our project since everything else has been precompiled by now, and future
-# (re)compilations will leverage the same cached layer(s)
-RUN go build -ldflags="-buildid= -w" -trimpath -v -o /bin/arrowverse
+# Compile! With the '--mount' flags below, Go's build cache is kept between builds.
+# https://github.com/golang/go/issues/27719#issuecomment-514747274
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
+  --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+  GOOS=$TARGETOS GOARCH=$TARGETARCH go build \
+  -ldflags="-X 'go.jlucktay.dev/version.builtBy=Docker'" -trimpath -v -o /bin/arrowverse
 
-FROM scratch AS runner
+FROM gcr.io/distroless/base:nonroot AS deployable
+USER 65532
 
 # Bring common CA certificates and binary over
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
