@@ -29,7 +29,7 @@ help:
 > | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 .PHONY: help
 
-all: test-cover lint build ## Run the 'test-cover', 'lint', and 'build' targets.
+all: test lint build ## Run the 'test', 'lint', and 'build' targets.
 test: tmp/.short-tests-passed.sentinel ## Run short tests.
 test-all: tmp/.all-tests-passed.sentinel ## Run all tests.
 test-consistency: tmp/.consistency-tests-passed.sentinel ## Run the consistency test.
