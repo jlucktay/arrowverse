@@ -56,8 +56,8 @@ jobs:
 
       - run: make all
 
-      - name: Send coverage to Coveralls
-        uses: shogo82148/actions-goveralls@v1
-        with:
-          flag-name: Go ${{ matrix.go }}
-          path-to-profile: cover.out
+      # - name: Send coverage to Coveralls
+      #   uses: shogo82148/actions-goveralls@v1
+      #   with:
+      #     flag-name: Go ${{ matrix.go }}
+      #     path-to-profile: cover.out
