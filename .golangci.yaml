@@ -1,8 +1,8 @@
 issues:
   exclude-use-default: false
   exclude:
-    - ^exported var `Err[A-Za-z]+` should have comment or be unexported$
-    - ^should have a package comment, unless it's in another file for this package$
+    # Don't expect godocs on exported static errors.
+    - '^exported: exported var Err[A-Za-z]+ should have comment or be unexported$'
   max-issues-per-linter: 0
   max-same-issues: 0
   new-from-rev: origin/main
@@ -22,7 +22,11 @@ linters-settings:
     errorf: true
 
   gci:
-    local-prefixes: go.jlucktay.dev/arrowverse
+    sections:
+      - standard
+      - default
+      - prefix(go.jlucktay.dev)
+      - prefix(go.jlucktay.dev/arrowverse)
 
   goconst:
     min-len: 3
@@ -38,9 +42,6 @@ linters-settings:
   gofumpt:
     extra-rules: true
 
-  golint:
-    min-confidence: 0
-
   govet:
     check-shadowing: true
     enable-all: true
@@ -49,14 +50,15 @@ linters-settings:
     line-length: 120
     tab-width: 2
 
-  maligned:
-    suggest-new: true
-
   nakedret:
     max-func-lines: 25
 
   nestif:
     min-complexity: 4
+
+  nlreturn:
+    # Size of the block (including return statement that is still "OK") so no return split required.
+    block-size: 3
 
   nolintlint:
     # Exclude following linters from requiring an explanation.  Default is [].
@@ -66,6 +68,9 @@ linters-settings:
     allow-leading-space: false
     require-explanation: true
     require-specific: true
+
+  revive:
+    min-confidence: 0
 
   unparam:
     check-exported: true
@@ -88,7 +93,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
     - dogsled
     - dupl
     - errcheck
@@ -101,26 +105,23 @@ linters:
     - goerr113
     - gofmt
     - gofumpt
-    - golint
     - gosec
     - gosimple
     - govet
     - ineffassign
     - lll
-    - maligned
     - nakedret
     - nestif
     - nlreturn
     - noctx
     - nolintlint
+    - revive
     - staticcheck
-    - structcheck
     - stylecheck
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
     - whitespace
     - wrapcheck
     - wsl

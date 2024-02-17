@@ -1,10 +1,13 @@
-# Binary
+# Metadata
+.dockerignore
+.git/
+.github/
+.gitignore
+
+# Build and binary files
+Dockerfile
 arrowverse
 
 # Makefile things
 /out/
 /tmp/
-
-# Git metadata
-.git
-.gitignore
