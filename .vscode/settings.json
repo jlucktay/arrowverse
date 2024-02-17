@@ -1,6 +1,13 @@
 {
+  "files.exclude": {
+    "out": true,
+    "tmp": true
+  },
+  "go.testEnvVars": {
+    "IS_NO_COLOR": true
+  },
   "gopls": {
     "build.buildFlags": ["-tags=test_consistency"],
-    "local": "go.jlucktay.dev/arrowverse"
+    "formatting.local": "go.jlucktay.dev/arrowverse"
   }
 }

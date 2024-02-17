@@ -15,8 +15,8 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Dependency directories
-vendor/
+# Dependency directories (remove the comment below to include it)
+# vendor/
 
 ### Go Patch ###
 /vendor/
@@ -24,10 +24,12 @@ vendor/
 
 # End of https://www.toptal.com/developers/gitignore/api/go
 
-# Binary
+# Builds and binaries
+/bin/
+/dist/
+/hack/bin/
 arrowverse
 
 # Makefile things
-/hack/bin/
 /out/
 /tmp/

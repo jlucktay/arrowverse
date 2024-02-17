@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.20 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.21 AS builder
 ARG TARGETOS TARGETARCH
 
 # Set some shell options for using pipes and such.
@@ -36,4 +36,8 @@ USER 65532
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /bin/arrowverse /bin/arrowverse
 
+VOLUME /workdir
+WORKDIR /workdir
+
+CMD [ "--help" ]
 ENTRYPOINT [ "/bin/arrowverse" ]
