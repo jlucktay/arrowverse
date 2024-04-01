@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/cenkalti/backoff/v4 v4.2.1
 	github.com/gocolly/colly/v2 v2.1.0
-	github.com/gofiber/fiber/v2 v2.52.0
+	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/google/go-cmp v0.5.9
 	github.com/matryer/is v1.4.1
 	github.com/mitchellh/go-homedir v1.1.0
