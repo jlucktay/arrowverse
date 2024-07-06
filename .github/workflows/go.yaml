@@ -77,7 +77,7 @@ jobs:
         name: Install 'make' and run 'make test' on macOS
         run: |
           brew install make
-          /usr/local/opt/make/libexec/gnubin/make test
+          gmake test
 
   release:
     name: Release 'v*'' tags
