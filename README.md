@@ -1,6 +1,7 @@
 # Arrowverse episode watch order
 
 [![Coverage Status](https://coveralls.io/repos/github/jlucktay/arrowverse/badge.svg?branch=main)](https://coveralls.io/github/jlucktay/arrowverse?branch=main)
+[![godoc](https://img.shields.io/badge/pkg.go.dev-godoc-00ADD8?logo=go)](https://pkg.go.dev/go.jlucktay.dev/arrowverse)
 
 ## Subcommand layout
 

@@ -44,6 +44,7 @@
 - `diff --recursive --exclude=.git --unidirectional-new-file . ~/git/github.com/jlucktay/template-go`
 - versioning, so that something like goreleaser can bake values in using ldflags
   - `cobra.Command` has a `Version` field to populate with a string
+- fix `TestEpisodeNumbers`
 
 ## Logging
 
@@ -60,3 +61,4 @@
 ## CI pipeline
 
 - [cache Docker builds on GitHub Actions](https://dev.to/dtinth/caching-docker-builds-in-github-actions-which-approach-is-the-fastest-a-research-18ei)
+- re-enable Coveralls

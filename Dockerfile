@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.22 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.24 AS builder
 ARG TARGETOS TARGETARCH
 
 # Set some shell options for using pipes and such.
@@ -39,5 +39,5 @@ COPY --from=builder /bin/arrowverse /bin/arrowverse
 VOLUME /workdir
 WORKDIR /workdir
 
-CMD [ "--help" ]
 ENTRYPOINT [ "/bin/arrowverse" ]
+CMD [ "--help" ]
