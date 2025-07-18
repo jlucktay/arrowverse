@@ -16,7 +16,6 @@ linters:
     - godot
     - godox
     - gosec
-    - lll
     - nakedret
     - nestif
     - nlreturn
@@ -29,6 +28,9 @@ linters:
     - whitespace
     - wrapcheck
     - wsl_v5
+
+  disable:
+    - lll
 
   settings:
     dogsled:
@@ -54,10 +56,6 @@ linters:
 
     govet:
       enable-all: true
-
-    lll:
-      line-length: 120
-      tab-width: 2
 
     nakedret:
       max-func-lines: 25
