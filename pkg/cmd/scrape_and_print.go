@@ -75,7 +75,7 @@ func ScrapeAndPrint(cmd *cobra.Command, _ []string) error {
 	}
 
 	for i := range csio {
-		if csio[i].Airdate.Year() < 5252 { //nolint:gomnd // https://dc.fandom.com/wiki/52#52
+		if csio[i].Airdate.Year() < 5252 {
 			fmt.Fprintf(cmd.OutOrStdout(), "[%03d] %s\n", i, csio[i])
 		}
 	}

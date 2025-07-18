@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.24 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.24-bookworm AS builder
 ARG TARGETOS TARGETARCH
 
 # Set some shell options for using pipes and such.
@@ -6,7 +6,7 @@ SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
 
 # Install/update the common CA certificates package now, and blag it later
 RUN apt-get update \
-  && apt-get install --assume-yes --no-install-recommends ca-certificates \
+  && apt-get install --assume-yes --no-install-recommends ca-certificates=20230311+deb12u1 \
   && apt-get autoremove --assume-yes \
   && rm -rf /root/.cache
 

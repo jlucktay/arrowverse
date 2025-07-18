@@ -80,7 +80,7 @@ func Episodes(show models.ShowName, episodeListURL string) (*models.Show, error)
 	}
 
 	eb := backoff.NewExponentialBackOff()
-	eb.MaxInterval = time.Second * 10 //nolint:gomnd // Wait a maximum of 10 seconds between visit attempts.
+	eb.MaxInterval = time.Second * 10
 	eb.MaxElapsedTime = time.Minute
 
 	if errVis := backoff.Retry(operation, eb); errVis != nil {
@@ -90,8 +90,7 @@ func Episodes(show models.ShowName, episodeListURL string) (*models.Show, error)
 	return s, nil
 }
 
-func processTableBody(tbody *colly.HTMLElement, rowNum int, show *models.Show, season *models.Season) (*models.Episode,
-	error) {
+func processTableBody(tbody *colly.HTMLElement, rowNum int, show *models.Show, season *models.Season) (*models.Episode, error) {
 	if tbody.DOM.ChildrenFiltered("th").Length() > 0 { // Skip <th> row
 		return nil, ErrNotEpisodeRow
 	}
@@ -103,7 +102,7 @@ func processTableBody(tbody *colly.HTMLElement, rowNum int, show *models.Show, s
 	// Trim citation link suffixes like "[3]"
 	checkCiteSuffix := regexp.MustCompile(`"?\[[0-9]+\]$`)
 
-	if tbody.DOM.ChildrenFiltered("td").Length() >= 4 { //nolint:gomnd // Deal with wider tables
+	if tbody.DOM.ChildrenFiltered("td").Length() >= 4 {
 		raw := tbody.ChildText(itSel.Next())
 		if ep.EpisodeOverall, err = strconv.Atoi(strings.TrimSpace(raw)); err != nil {
 			return nil, fmt.Errorf("%q: %w", raw, ErrCouldNotParse)
@@ -140,9 +139,9 @@ func processTableBody(tbody *colly.HTMLElement, rowNum int, show *models.Show, s
 
 	// Round off 'TBA' airdates into the future 🤷‍♂️
 	if epAirdate == "TBA" {
-		theFuture := 5252 - time.Now().Year() //nolint:gomnd // https://dc.fandom.com/wiki/52#52
+		theFuture := 5252 - time.Now().Year()
 
-		ep.Airdate = time.Now().AddDate(theFuture, 0, 0).Round(time.Hour * 24) //nolint:gomnd // 24h = 1d
+		ep.Airdate = time.Now().AddDate(theFuture, 0, 0).Round(time.Hour * 24)
 	} else if ep.Airdate, err = time.Parse(models.AirdateLayout, epAirdate); err != nil {
 		// First attempt to parse date/month/year from airdate, otherwise fall back to parsing just a year
 		if ep.Airdate, err = time.Parse("2006", epAirdate); err != nil {

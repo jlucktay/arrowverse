@@ -28,7 +28,7 @@ linters:
     - unparam
     - whitespace
     - wrapcheck
-    - wsl
+    - wsl_v5
 
   settings:
     dogsled:
@@ -80,15 +80,12 @@ linters:
       multi-if: false
       multi-func: false
 
-    wsl:
-      strict-append: true
-      allow-assign-and-call: true
-      allow-multiline-assign: true
-      allow-cuddle-declarations: false
-      allow-trailing-comment: false
-      force-case-trailing-whitespace: 0
-      force-err-cuddling: true
-      allow-separated-leading-comment: false
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+      enable:
+        - err
 
   exclusions:
     generated: lax

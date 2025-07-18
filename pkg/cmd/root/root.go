@@ -62,7 +62,7 @@ searched in descending order of preference for a file named '` + cfgName + `.` +
 		SilenceUsage:               false,
 		DisableFlagParsing:         false,
 		DisableSuggestions:         false,
-		SuggestionsMinimumDistance: 3, //nolint:gomnd // Increase from default of 2
+		SuggestionsMinimumDistance: 3,
 	}
 
 	// Here you will define your flags and configuration settings.
